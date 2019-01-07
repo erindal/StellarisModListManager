@@ -1,7 +1,7 @@
 # StellarisModListManager
 A simple mod list manager for Stellaris.
 
-Built on Python 3.6.5
+Built on Python 3.7.2
 
 User Guide (v0.1):
 
@@ -21,3 +21,8 @@ You can now open the launcher, change your mod list, close it, and save a new mo
 To load a list again, type load, then enter the name you saved the list under (the program will give you a file list if you forget).
 
 You can also type "read" to list what mods are currently enabled.
+
+For v0.2+ Users:
+Type 'gui' in the command prompt after running main.exe. This will launch a gui window that will allow you load and save your modlists.
+You still must create the initial list in the Stellaris launcher, then close the launcher, before saving it.
+Clicking the read button will output your modlist into the console window.
