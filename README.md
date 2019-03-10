@@ -1,5 +1,5 @@
 # StellarisModListManager
-A simple mod list manager for Stellaris.
+A simple mod list manager for Stellaris. Currently being rewritten and expanded in C#.
 
 Built on Python 3.7.2
 
