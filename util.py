@@ -5,20 +5,20 @@
 import setup
 
 
-def readSettingsFile():
+def readSettingsFile(): #returns settings file string
 	settings_file = open(setup.settings_path, 'r')
 	fileString = settings_file.read()
 	settings_file.close()
 	return fileString
 	
 	
-def writeSettingsFile(stringtowrite):
+def writeSettingsFile(stringtowrite): #takes string, writes to settings file
 	settings_file = open(setup.settings_path, 'w')
 	settings_file.write(stringtowrite)
 	settings_file.close()
 	print("Wrote to settings file")
 	
-def decompileSettings(settingsString):
+def decompileSettings(settingsString): #takes settings file string, returns separated dictionary of settings file
 	settingsDict = {}
 	
 	index1 = settingsString.find("last_mods={") #finds beginning of mod list
@@ -33,6 +33,6 @@ def decompileSettings(settingsString):
 	
 	return settingsDict
 	
-def compileSettings(settingsDict):
+def compileSettings(settingsDict): #takes settings dictionary, returns complete string for settings file
 	settingsString = settingsDict["Beginning"] + settingsDict["Mods"] + settingsDict["End"]
 	return settingsString
