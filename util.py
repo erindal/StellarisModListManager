@@ -36,3 +36,63 @@ def decompileSettings(settingsString): #takes settings file string, returns sepa
 def compileSettings(settingsDict): #takes settings dictionary, returns complete string for settings file
 	settingsString = settingsDict["Beginning"] + settingsDict["Mods"] + settingsDict["End"]
 	return settingsString
+	
+def readMods(settingsDict): #takes settings dict returns list of mod name strings
+	modString = settingsDict["Mods"]
+	modString = modString.replace("\t","") #strip tabs
+	modList = modString.split("\n") #separate to list
+	modNameList = []
+	
+	for i in modList:
+		modNameList.append(modPathToName(i))
+		
+	return modNameList
+	
+def modPathToName(modPath):
+	#strip quotes
+	modPath = modPath.replace('"', '')
+
+	currentmodfile = "C:/Users/" + setup.currentuser + "/Documents/Paradox Interactive/Stellaris/" + modPath
+	try:
+		tempmodfile = open(currentmodfile, 'r')
+	except:
+		print("!!")
+		print("An invalid mod id exists. The mod may not have downloaded, or many not exist. ID: " + i + ". Exiting")
+		return
+	#TODO - search for name=" instead
+	lineone = tempmodfile.readline()
+	modname = lineone.replace('name="','')
+	modname = modname.replace('"\n','')
+	return(modname)
+	
+	
+	
+	
+	
+	
+	
+def nullifier(): #this is nothing at all
+	pass
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

@@ -20,8 +20,16 @@ def dev():
 	testDict["Mods"] = "\n"
 	testOut = util.compileSettings(testDict)
 	util.writeSettingsFile(testOut)
+	
+def dev2():
+	setup.confirmStellaris()
+	test = util.readSettingsFile()
+	testDict = util.decompileSettings(test)
+	out = util.readMods(testDict)
+	print(out)
 		
 if __name__ == "__main__":
    # stuff only to run when not called via 'import' here
-   run()
+   #run()
    #dev()
+   dev2()
