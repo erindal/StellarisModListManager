@@ -7,6 +7,7 @@ import os
 
 currentuser = getpass.getuser()
 settings_path = "C:/Users/" + currentuser + "/Documents/Paradox Interactive/Stellaris/settings.txt"
+mod_folder_path = "C:/Users/" + currentuser + "/Documents/Paradox Interactive/Stellaris/mod/"
 
 def confirmStellaris(): #returns false if no stellaris dir exists or if cannot create modlist dir
 

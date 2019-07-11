@@ -3,6 +3,13 @@
 #This code is under the MIT License, however if you use it, some notification would be appreciated!
 
 import setup
+import os
+
+class Mod: #holds mod info
+	def __init__(self, name, path):
+		self.name = name
+		self.path = path
+		
 
 
 def readSettingsFile(): #returns settings file string
@@ -22,7 +29,7 @@ def decompileSettings(settingsString): #takes settings file string, returns sepa
 	settingsDict = {}
 	
 	index1 = settingsString.find("last_mods={") #finds beginning of mod list
-	
+	#TODO HANDLE THIS NOT EXISTING
 	index2 = settingsString.find("}\nautosave") #finds end of mod list
 	
 	settingsDict["Beginning"] = settingsString[0:index1+11] #first part of settings file
@@ -48,7 +55,7 @@ def readMods(settingsDict): #takes settings dict returns list of mod name string
 		
 	return modNameList
 	
-def modPathToName(modPath):
+def modPathToName(modPath): #takes mod path and returns the mod name as a string
 	#strip quotes
 	modPath = modPath.replace('"', '')
 
@@ -65,10 +72,34 @@ def modPathToName(modPath):
 	modname = modname.replace('"\n','')
 	return(modname)
 	
+def getAllMods():
+	currentdir = setup.mod_folder_path
+
+	allModsList = []
+
+	for filename in os.listdir(currentdir): #go through mod directory
+		if filename[-4:] == ".mod": #to ignore mod directories
+			try:	
+				tempfile = open(currentdir + filename, 'r')
+				
+				#clean mod name
+				lineone = tempfile.readline()
+				modname = lineone.replace('name="','')
+				modname = modname.replace('"\n','') 
+				
+				#create class with name and path
+				allModsList.append(Mod(name=modname, path=filename))
+				
+			except PermissionError:
+				print("Permission Error")
+				print(filename)
+				print("SMLM does not have access to this file")
 	
+	return allModsList
 	
-	
-	
+def listModNames(modObjList):
+	for i in modObjList:
+		print(i.name)
 	
 	
 def nullifier(): #this is nothing at all
