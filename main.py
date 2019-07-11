@@ -30,6 +30,6 @@ def dev2():
 		
 if __name__ == "__main__":
    # stuff only to run when not called via 'import' here
-   #run()
+   run()
    #dev()
-   dev2()
+   #dev2()

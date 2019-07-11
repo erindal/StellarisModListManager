@@ -8,6 +8,7 @@ import os
 currentuser = getpass.getuser()
 settings_path = "C:/Users/" + currentuser + "/Documents/Paradox Interactive/Stellaris/settings.txt"
 mod_folder_path = "C:/Users/" + currentuser + "/Documents/Paradox Interactive/Stellaris/mod/"
+save_folder_path = "C:/Users/" + currentuser + "/Documents/Paradox Interactive/Stellaris/SMLM/"
 
 def confirmStellaris(): #returns false if no stellaris dir exists or if cannot create modlist dir
 
@@ -20,8 +21,8 @@ def confirmStellaris(): #returns false if no stellaris dir exists or if cannot c
 		print("Stellaris folder detected.")
 		
 		#Create saved folder directory	
-		if not os.path.exists("C:/Users/" + currentuser + "/Documents/Paradox Interactive/Stellaris/SMLM"):
-			path = "C:/Users/" + currentuser + "/Documents/Paradox Interactive/Stellaris/SMLM"
+		if not os.path.exists(save_folder_path):
+			path = save_folder_path
 			try:
 				os.mkdir(path)
 			except:

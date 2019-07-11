@@ -72,7 +72,7 @@ def modPathToName(modPath): #takes mod path and returns the mod name as a string
 	modname = modname.replace('"\n','')
 	return(modname)
 	
-def getAllMods():
+def getAllMods(): #returns list of Mod classes
 	currentdir = setup.mod_folder_path
 
 	allModsList = []
@@ -97,9 +97,42 @@ def getAllMods():
 	
 	return allModsList
 	
+def sortModList(val): #use as a key
+	return val.name
+	
+
+	
 def listModNames(modObjList):
 	for i in modObjList:
 		print(i.name)
+		
+		
+#check boxes to path funcs
+def boxDictToNameList(boxDict):
+	nameList = []
+	
+	for i in boxDict:
+		if boxDict[i] == True:
+			nameList.append(i)
+			
+	return nameList
+	
+def nameListToPathList(nameList, allMods):
+	pathList = []
+	
+	for i in allMods:
+		if i.name in nameList:
+			pathList.append(i.path)
+			
+	return pathList
+	
+def pathListToString(pathList):
+	pathString = "\n"
+	
+	for i in pathList:
+		pathString = pathString + '\t"mod/' + i + '"\n'
+		
+	return pathString
 	
 	
 def nullifier(): #this is nothing at all
