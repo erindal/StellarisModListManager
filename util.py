@@ -23,7 +23,7 @@ def writeSettingsFile(stringtowrite): #takes string, writes to settings file
 	settings_file = open(setup.settings_path, 'w')
 	settings_file.write(stringtowrite)
 	settings_file.close()
-	print("Wrote to settings file")
+	print("Updated settings file")
 	
 def decompileSettings(settingsString): #takes settings file string, returns separated dictionary of settings file
 	settingsDict = {}

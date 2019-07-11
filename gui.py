@@ -53,6 +53,8 @@ def start():
 				SaveState.everSaved = True
 			else:
 				saveModList()
+			SaveState.isSaved = True
+			print("Mod list saved")
 		elif button == "Save As":
 			app.showSubWindow("Save Dialog")
 		elif button == "Export to pastebin":
@@ -100,29 +102,20 @@ def start():
 	#BOTTOM CENTER
 	app.startFrame("CENTER_BOTTOM", row=2, column=0, colspan=2)
 	
-	def comp():
-		test = app.getAllCheckBoxes()
-		print(test)
-	
 	def putToSettings():
-		#if SaveState.isSaved:
-		ReadWrite.settingsFileDict["Mods"] = ReadWrite.modString
-		print(ReadWrite.settingsFileDict["Mods"])
-		settingsString = util.compileSettings(ReadWrite.settingsFileDict)
-		util.writeSettingsFile(settingsString)
-		print("WROTE TO SETTINGS")
-		#else:
-		#	if SaveState.everSaved:
-		#		pass
-	app.addButton("Go", comp)
-	app.setButtonSticky("Go", "")
-	
+		if SaveState.isSaved:
+			ReadWrite.settingsFileDict["Mods"] = ReadWrite.modString
+			settingsString = util.compileSettings(ReadWrite.settingsFileDict)
+			util.writeSettingsFile(settingsString)
+		else:
+			if SaveState.everSaved:
+				app.infoBox("Please save", "Please save before activating")
+			else:
+				app.warningBox("Save required", "You have not yet saved your mod list, please save it before activating it")
+		
 	app.addButton("Activate", putToSettings)
 	app.setButtonSticky("Activate", "")
-	
-	
-	
-	
+		
 	app.stopFrame()
 	
 	#SAVE/SAVE AS BOX
