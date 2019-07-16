@@ -15,21 +15,30 @@ def start():
 	allMods = util.getAllMods()
 	allMods.sort(key = util.sortModList)
 	
-	class ReadWrite:
+	class ReadWrite: #Holds certain variables for saving and loading
 		settingsFileDict = util.decompileSettings(util.readSettingsFile())
 		modString = ""
 		currentSaveFile = ""
-		
-		
 		
 	
 	class SaveState: #Holds save status
 		isSaved = False
 		everSaved = False
 		
-	
+		
 	app.setBg("#6B7A8F")
 	app.setFont(family="Verdana")
+	
+	
+	app.addStatusbar(fields = 1, side = "Bottom")
+	app.setStatusbar("Not Saved")
+	
+	def updateStatus():
+		if SaveState.isSaved:
+			app.setStatusbar("Saved")
+		else:
+			app.setStatusbar("Not Saved")
+	
 	
 	#def resetChecks():
 	#	for i in allMods:
@@ -45,20 +54,24 @@ def start():
 			else:
 				if app.questionBox("Clear mod list", "Your mod list has not been saved, would you like to clear it anyway?"):
 					app.clearAllCheckBoxes()
+			updateStatus()
 		elif button == "Load":
-			pass
+			updateStatus()
 		elif button == "Save":
 			if not SaveState.everSaved:
 				app.showSubWindow("Save Dialog")
-				SaveState.everSaved = True
+				#SaveState.everSaved = True
 			else:
 				saveModList()
-			SaveState.isSaved = True
+				SaveState.isSaved = True
 			print("Mod list saved")
+			updateStatus()
 		elif button == "Save As":
 			app.showSubWindow("Save Dialog")
+			updateStatus()
 		elif button == "Export to pastebin":
 			print(app.getAllCheckBoxes())
+			updateStatus()
 		elif button == "Settings":
 			pass
 		elif button == "Exit":
@@ -84,6 +97,7 @@ def start():
 	
 	def notSaved():
 		SaveState.isSaved=False
+		updateStatus()
 	
 	for i in allMods:
 		app.addCheckBox(i.name)
@@ -129,13 +143,16 @@ def start():
 		file.write(ReadWrite.modString)
 	
 	def saveButton():
-		ReadWrite.currentSaveFile = app.getEntry("Enter mod list name") + app.getEntry("Enter Stellaris Version Number") + ".txt"
+		listName = app.getEntry("Enter mod list name")
 		
-		print(ReadWrite.currentSaveFile)
-		
-		saveModList()
-		
-		app.hideSubWindow("Save Dialog")
+		if listName != "":
+			ReadWrite.currentSaveFile = listName + app.getEntry("Enter Stellaris Version Number") + ".txt"	
+			saveModList()		
+			SaveState.isSaved = True
+			SaveState.everSaved = True
+			app.hideSubWindow("Save Dialog")
+		else:
+			app.warningBox("Enter a name", "You must enter a name for your mod list")
 	
 	app.addLabelEntry("Enter mod list name")
 	app.setEntryDefault("Enter mod list name", "default")
