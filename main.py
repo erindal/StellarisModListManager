@@ -1,35 +1,18 @@
-#Author: Erindal
-#Contact: erindalc@gmail.com
-#This code is under the MIT License, however if you use it, some notification would be appreciated!
+# Author: Erindal
+# Contact: erindalc@gmail.com
+# This code is under the MIT License, however if you use it, some notification would be appreciated!
 
 
 import setup
 import gui
 import util
 
+
 def run():
-	doRun = setup.confirmStellaris()
-	if doRun:
-		gui.start()
-		
-		
-def dev():
-	setup.confirmStellaris()
-	test = util.readSettingsFile()
-	testDict = util.decompileSettings(test)
-	testDict["Mods"] = "\n"
-	testOut = util.compileSettings(testDict)
-	util.writeSettingsFile(testOut)
-	
-def dev2():
-	setup.confirmStellaris()
-	test = util.readSettingsFile()
-	testDict = util.decompileSettings(test)
-	out = util.readMods(testDict)
-	print(out)
-		
+    doRun = setup.confirmStellaris()
+    if doRun:
+        gui.start()
+
+
 if __name__ == "__main__":
-   # stuff only to run when not called via 'import' here
-   run()
-   #dev()
-   #dev2()
+    run()
