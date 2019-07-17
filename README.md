@@ -1,6 +1,4 @@
 # StellarisModListManager
-A simple mod list manager for Stellaris. A full release is WIP.
-
 Update 7/17:
 The full release is approximately 50% done.
 
@@ -11,6 +9,10 @@ New features (planned):
 -Directly edit settings file
 
 -Full UI
+
+-
+
+A simple mod list manager for Stellaris. A full release is WIP.
 
 Built on Python 3.7.2
 
