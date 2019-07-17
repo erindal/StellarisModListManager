@@ -24,23 +24,16 @@ def start():
         isSaved = False
         everSaved = False
 
-    app.setBg("#6B7A8F")
-    app.setFont(family="Verdana")
+    # Functions
 
-    app.addStatusbar(fields=1, side="Bottom")
-    app.setStatusbar("Not Saved")
-
+    # Status function - call this whenever the mod list is changed
     def updateStatus():
         if SaveState.isSaved:
             app.setStatusbar("Saved")
         else:
             app.setStatusbar("Not Saved")
 
-    # def resetChecks():
-    #	for i in allMods:
-    #		app.setCheckBox(i.name, ticked=False)
-
-    # FILE MENU
+    # File Menu Buttons
     def menuPress(button):
         if button == "New":
             if SaveState.isSaved:
@@ -74,6 +67,54 @@ def start():
         elif button == "Exit":
             app.stop()
 
+    # Call this whenever mod list is updated
+    def notSaved():
+        SaveState.isSaved = False
+        updateStatus()
+
+    # Writes current mod list to Stellaris settings file
+    def putToSettings():
+        if SaveState.isSaved:
+            ReadWrite.settingsFileDict["Mods"] = ReadWrite.modString
+            settingsString = util.compileSettings(ReadWrite.settingsFileDict)
+            util.writeSettingsFile(settingsString)
+        else:
+            if SaveState.everSaved:
+                app.infoBox("Please save", "Please save before activating")
+            else:
+                app.warningBox("Save required",
+                               "You have not yet saved your mod list, please save it before activating it")
+
+    # Write mod list to savefile
+    def saveModList():
+        nameList = util.boxDictToNameList(app.getAllCheckBoxes())
+        pathList = util.nameListToPathList(nameList, allMods)
+        ReadWrite.modString = util.pathListToString(pathList)
+        file = open(setup.save_folder_path + ReadWrite.currentSaveFile, "w")
+        file.write(ReadWrite.modString)
+
+    # Save button function
+    def saveButton():
+        listName = app.getEntry("Enter mod list name")
+
+        if listName != "":
+            ReadWrite.currentSaveFile = listName + app.getEntry("Enter Stellaris Version Number") + ".txt"
+            saveModList()
+            SaveState.isSaved = True
+            SaveState.everSaved = True
+            app.hideSubWindow("Save Dialog")
+        else:
+            app.warningBox("Enter a name", "You must enter a name for your mod list")
+
+
+
+    # APP CONFIG
+    app.setBg("#6B7A8F")
+    app.setFont(family="Verdana")
+
+    app.addStatusbar(fields=1, side="Bottom")
+    app.setStatusbar("Not Saved")
+
     fileMenus = ["New", "Load", "Save", "Save As", "-", "Export to pastebin", "Settings", "-", "Exit"]
     app.addMenuList("File", fileMenus, menuPress)
 
@@ -90,9 +131,7 @@ def start():
 
     app.startScrollPane("All Mods")
 
-    def notSaved():
-        SaveState.isSaved = False
-        updateStatus()
+
 
     for i in allMods:
         app.addCheckBox(i.name)
@@ -110,17 +149,7 @@ def start():
     # BOTTOM CENTER
     app.startFrame("CENTER_BOTTOM", row=2, column=0, colspan=2)
 
-    def putToSettings():
-        if SaveState.isSaved:
-            ReadWrite.settingsFileDict["Mods"] = ReadWrite.modString
-            settingsString = util.compileSettings(ReadWrite.settingsFileDict)
-            util.writeSettingsFile(settingsString)
-        else:
-            if SaveState.everSaved:
-                app.infoBox("Please save", "Please save before activating")
-            else:
-                app.warningBox("Save required",
-                               "You have not yet saved your mod list, please save it before activating it")
+
 
     app.addButton("Activate", putToSettings)
     app.setButtonSticky("Activate", "")
@@ -130,24 +159,7 @@ def start():
     # SAVE/SAVE AS BOX
     app.startSubWindow("Save Dialog")
 
-    def saveModList():
-        nameList = util.boxDictToNameList(app.getAllCheckBoxes())
-        pathList = util.nameListToPathList(nameList, allMods)
-        ReadWrite.modString = util.pathListToString(pathList)
-        file = open(setup.save_folder_path + ReadWrite.currentSaveFile, "w")
-        file.write(ReadWrite.modString)
 
-    def saveButton():
-        listName = app.getEntry("Enter mod list name")
-
-        if listName != "":
-            ReadWrite.currentSaveFile = listName + app.getEntry("Enter Stellaris Version Number") + ".txt"
-            saveModList()
-            SaveState.isSaved = True
-            SaveState.everSaved = True
-            app.hideSubWindow("Save Dialog")
-        else:
-            app.warningBox("Enter a name", "You must enter a name for your mod list")
 
     app.addLabelEntry("Enter mod list name")
     app.setEntryDefault("Enter mod list name", "default")
@@ -156,6 +168,12 @@ def start():
     app.addNamedButton("Okay", "saveBtn", saveButton)
 
     app.stopSubWindow()
+
+
+
+
+
+
 
     # Keep at bottom, runs app
     app.go()

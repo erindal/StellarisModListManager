@@ -6,12 +6,15 @@
 import setup
 import gui
 import util
+import gui3
 
 
 def run():
     doRun = setup.confirmStellaris()
     if doRun:
-        gui.start()
+        #gui.start()
+        gui3.runApp()
+
 
 
 if __name__ == "__main__":
