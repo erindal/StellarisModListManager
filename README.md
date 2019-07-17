@@ -5,8 +5,11 @@ Update 7/17:
 The full release is approximately 50% done.
 
 New features (planned):
+
 -Profile system
+
 -Directly edit settings file
+
 -Full UI
 
 Built on Python 3.7.2
