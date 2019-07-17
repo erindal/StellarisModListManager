@@ -4,13 +4,12 @@ The full release is approximately 50% done.
 
 New features (planned):
 
--Profile system
+- Profile system
 
--Directly edit settings file
+- Directly edit settings file
 
--Full UI
-
--
+- Full UI
+________________________________________________
 
 A simple mod list manager for Stellaris. A full release is WIP.
 
