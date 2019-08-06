@@ -11,7 +11,6 @@ class Mod:  # holds mod info
 		self.name = name
 		self.path = path
 
-
 def readSettingsFile():  # returns settings file string
 	settings_file = open(setup.settings_path, 'r')
 	fileString = settings_file.read()

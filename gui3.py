@@ -22,107 +22,82 @@ class State:
 	isActivated = False
 	selectedModNames = []
 
-
-class StringMod:  # This holds the variables added onto mod names to separate them, for when a mod name conflicts
-	right = "-RIGHT"
-	left = "-LEFT"
-
-
 # Functions
 
 # Status Function - Call to update status bar
 def updateStatus():
 	pass
 
-def runThreadedUpdate():
-	sleep(2)
-	app.thread(threadedUpdate)
-
-def updateModLists(modDict):
-	for i in modDict:
-		if modDict[i]:
-			if i not in State.selectedModNames:
-				State.selectedModNames.append(i)
-		else:
-			if i in State.selectedModNames:
-				State.selectedModNames.remove(i)
-
-def threadedUpdate():
-	modDict = app.getAllCheckBoxes()
-	app.queueFunction(clearAllPanes)
-	app.queueFunction(updateModLists, modDict)
-	app.queueFunction(populateModList, State.selectedModNames)
-	app.queueFunction(populateSelectedMods)
-
-# Update Mod UI - Call to update the mod list in application
-def updateModList():
-	modDict = app.getAllCheckBoxes()
-	clearAllPanes()
-	#print(modDict)
-	for i in modDict:
-		if modDict[i]:
-			if i not in State.selectedModNames:
-				State.selectedModNames.append(i)
-		else:
-			if i in State.selectedModNames:
-				State.selectedModNames.remove(i)
-
-	print(State.selectedModNames)
-
-	populateModList(ignore=State.selectedModNames)
-	populateSelectedMods()
-
-# Clear both scroll panes to avoid conflicts
-def clearAllPanes():
+# Called to enable mod in app
+def enableModFunc(mod):
+	# Remove from left
 	app.openFrame("LEFT")
 	app.openScrollPane("Available Mods")
-	app.emptyCurrentContainer()
+	app.removeCheckBox(mod)
 	app.stopScrollPane()
 	app.stopFrame()
+	# Add to right
 	app.openFrame("RIGHT")
 	app.openScrollPane("Current Mods")
-	app.emptyCurrentContainer()
+	app.addCheckBox(mod)
+	app.setCheckBoxChangeFunction(mod, disableModFunc)
 	app.stopScrollPane()
 	app.stopFrame()
+	# Update internal mod list
+	State.selectedModNames.append(mod)
 
-# Populate Mod UI - Run after to reset the mod list in application
+# Called to disable mod in app
+def disableModFunc(mod):
+	# Remove from right
+	app.openFrame("RIGHT")
+	app.openScrollPane("Current Mods")
+	app.removeCheckBox(mod)
+	app.stopScrollPane()
+	app.stopFrame()
+	# Add to left
+	app.openFrame("LEFT")
+	app.openScrollPane("Available Mods")
+	app.addCheckBox(mod)
+	app.setCheckBoxChangeFunction(mod, enableModFunc)
+	app.stopScrollPane()
+	app.stopFrame()
+	# Update internal mod list
+	State.selectedModNames.remove(mod)
+
+# Populate Mod UI - Run to reset the mod list in app, use ignore arg if loading mod list
 def populateModList(ignore=[]):
 	app.openFrame("LEFT")
 	app.openScrollPane("Available Mods")
-
 	app.emptyCurrentContainer()
 
 	for i in allMods:
 		if i.name not in ignore:
 			try:
 				app.addCheckBox(i.name)
-				app.setCheckBoxChangeFunction(i.name, runThreadedUpdate)
-			except:
-				print("Skipping " + i.name)
+				app.setCheckBoxChangeFunction(i.name, enableModFunc)
+			except:  # TODO catch ONLY appJar ItemLookupError
+				print("Skipping " + i.name)  # This shouldn't happen anymore, if it does there's a bug
 
 	app.stopScrollPane()
 	app.stopFrame()
 
+# Populate Selected Mods - Run after loading an existing mod list
 def populateSelectedMods():
 	app.openFrame("RIGHT")
 	app.openScrollPane("Current Mods")
-
-	#app.emptyCurrentContainer()
+	app.emptyCurrentContainer()
 
 	for i in State.selectedModNames:
 		app.addCheckBox(i)
-		app.setCheckBox(i, ticked=True)
-		app.setCheckBoxChangeFunction(i, runThreadedUpdate)
+		app.setCheckBoxChangeFunction(i, disableModFunc)
 
 	app.stopScrollPane()
 	app.stopFrame()
-
 
 # Menu Buttons
 def menuButtons(button):
 	if button == "Create New Profile":
-		populateModList()
-		#createProfile()
+		createProfile()
 	elif button == "Change Profile":
 		changeProfile()
 	elif button == "Export/Share":
@@ -138,7 +113,8 @@ def menuButtons(button):
 
 # Create Profile
 def createProfile():
-	pass
+	app.showSubWindow("Create Profile")
+	populateModList()
 
 # Change Profile
 def changeProfile():
@@ -204,7 +180,7 @@ app.startScrollPane("Available Mods")
 # temporary fixes toward forcing a larger size
 app.setScrollPaneHeight("Available Mods", 500)
 app.setScrollPaneSticky("Available Mods", "both")
-app.addLabel("None loaded")
+#app.addLabel("None loaded")
 
 app.stopScrollPane()
 
@@ -216,11 +192,22 @@ app.setBg("white")
 
 
 app.startScrollPane("Current Mods")
-app.addLabel("None enabled")
+#app.addLabel("None enabled")
 
 app.stopScrollPane()
 
 app.stopFrame()
+
+
+# CREATE PROFILE SUBWINDOW
+def doneFunc():
+	app.hideSubWindow("Create Profile")
+
+app.startSubWindow("Create Profile", modal=True)
+app.addLabelEntry("Name") # TODO Make these named label entries and a named btn
+app.addLabelEntry("Stellaris Version")
+app.addButton("Done", doneFunc)
+app.stopSubWindow()
 
 # RUN APP
 def runApp():
