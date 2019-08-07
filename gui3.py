@@ -22,6 +22,7 @@ class State:
 	isActivated = False
 	selectedModNames = []
 
+
 # Functions
 
 # Status Function - Call to update status bar
@@ -94,10 +95,13 @@ def populateSelectedMods():
 	app.stopScrollPane()
 	app.stopFrame()
 
+
+
+
 # Menu Buttons
 def menuButtons(button):
 	if button == "Create New Profile":
-		createProfile()
+		app.showSubWindow("Create Profile")
 	elif button == "Change Profile":
 		changeProfile()
 	elif button == "Export/Share":
@@ -113,8 +117,16 @@ def menuButtons(button):
 
 # Create Profile
 def createProfile():
-	app.showSubWindow("Create Profile")
-	populateModList()
+	if app.getEntry("CreateName") is not "":
+		if app.getEntry("CreateVersion") is not "":
+			app.hideSubWindow("Create Profile")
+			State.currentProfile = str(app.getEntry("CreateName") + app.getEntry("CreateVersion"))
+			populateModList()
+		else:
+			app.errorBox("Need Version", "Please choose a version number!", parent="Create Profile")
+	else:
+		app.errorBox("Need Name", "Please enter a name!", parent="Create Profile")
+
 
 # Change Profile
 def changeProfile():
@@ -198,16 +210,26 @@ app.stopScrollPane()
 
 app.stopFrame()
 
+# BOTTOM FRAME
+app.startFrame("BOTTOM", row=2, column=0, colspan=2)
+app.addNamedButton("Save", "SaveBtn", saveProfile)
+app.addNamedButton("Activate", "ActivateBtn", activateProfile)
+
 
 # CREATE PROFILE SUBWINDOW
-def doneFunc():
-	app.hideSubWindow("Create Profile")
-
 app.startSubWindow("Create Profile", modal=True)
-app.addLabelEntry("Name") # TODO Make these named label entries and a named btn
-app.addLabelEntry("Stellaris Version")
-app.addButton("Done", doneFunc)
+app.addEntry("CreateName")
+app.addEntry("CreateVersion")
+app.setEntryDefault("CreateName", "Profile Name")
+app.setEntryDefault("CreateVersion", "Stellaris Version")
+app.addNamedButton("Done", "CreateDone", createProfile)
 app.stopSubWindow()
+
+
+
+
+
+
 
 # RUN APP
 def runApp():
