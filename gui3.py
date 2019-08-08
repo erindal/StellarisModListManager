@@ -226,8 +226,12 @@ app.addNamedButton("Done", "CreateDone", createProfile)
 app.stopSubWindow()
 
 
+# EXIT CHECK
+def checkStop():
+	return app.yesNoBox("Confirm Exit", "Are you sure you want to exit the application?")
 
 
+app.setStopFunction(checkStop)  # TODO Check save and activated status
 
 
 
