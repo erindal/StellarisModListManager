@@ -162,9 +162,14 @@ def getAllProfiles():
 def parseSavedProfile(profile, modDict):  #returns list of mod names
 	file = open(setup.save_folder_path + profile + ".txt", "r")
 	modString = file.read()
-	tempString = modString.replace('\t"mod/', "")  #clear formatting
-	tempString = tempString.replace('"', "")  #clear quote
-	templist = tempString.split("\n")  #Split by newline
+
+	returnlist = cleanModString(modString, modDict)
+	return returnlist
+
+def cleanModString(modString, modDict):
+	tempString = modString.replace('\t"mod/', "")  # clear formatting
+	tempString = tempString.replace('"', "")  # clear quote
+	templist = tempString.split("\n")  # Split by newline
 	returnlist = []
 	for path in templist:
 		if path == "":

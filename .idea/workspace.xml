@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f28d79bb-88f0-4db1-9a98-5a63ec653f2c" name="Default Changelist" comment="semi functional modlist ui">
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+    <list default="true" id="f28d79bb-88f0-4db1-9a98-5a63ec653f2c" name="Default Changelist" comment="Technically functional profile system. UI mod list changes are still buggy, but you can now create, save, and load profiles.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui3.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/util.py" afterDir="false" />
@@ -149,6 +148,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="semi functional modlist ui" />
-    <option name="LAST_COMMIT_MESSAGE" value="semi functional modlist ui" />
+    <MESSAGE value="Technically functional profile system. UI mod list changes are still buggy, but you can now create, save, and load profiles." />
+    <option name="LAST_COMMIT_MESSAGE" value="Technically functional profile system. UI mod list changes are still buggy, but you can now create, save, and load profiles." />
   </component>
 </project>

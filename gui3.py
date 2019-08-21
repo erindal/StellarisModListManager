@@ -7,12 +7,13 @@ from time import sleep
 import util
 import setup
 
-app = gui("Stellaris Mod List Manager", "800x600")
+app = gui("Stellaris Mod List Manager", "800x650")
 
 # Objects
 
 allMods = util.getAllMods()
 allMods.sort(key=util.sortModList)
+
 
 class State:
 	settingsFileDict = util.decompileSettings(util.readSettingsFile())
@@ -23,13 +24,29 @@ class State:
 	selectedModNames = []
 	profileToLoad = []
 	profileList = []
-
+	newProfile = True
 
 # Functions
 
-# Status Function - Call to update status bar
+# Status Function - Called every second
 def updateStatus():
-	pass
+	app.setLabel("current_profile", State.currentProfile)
+
+	# Status bar
+	if State.isSaved:
+		app.setStatusbar("Saved", 0)
+		app.setStatusbarBg("green", 0)
+	else:
+		app.setStatusbar("Not Saved", 0)
+		app.setStatusbarBg("red", 0)
+
+	if State.isActivated:
+		app.setStatusbar("Activated", 1)
+		app.setStatusbarBg("green", 1)
+	else:
+		app.setStatusbar("Not Activated", 1)
+		app.setStatusbarBg("red", 1)
+
 
 # Called to enable mod in app
 def enableModFunc(mod, reload=False):
@@ -50,6 +67,11 @@ def enableModFunc(mod, reload=False):
 	if not reload:
 		State.selectedModNames.append(mod)
 
+	# State update
+	State.isActivated = False
+	State.isSaved = False
+
+
 # Called to disable mod in app
 def disableModFunc(mod):
 	# Remove from right
@@ -68,8 +90,19 @@ def disableModFunc(mod):
 	# Update internal mod list
 	State.selectedModNames.remove(mod)
 
+	# State update
+	State.isActivated = False
+	State.isSaved = False
+
+
 # Populate Mod UI - Run to reset the mod list in app
 def populateModList(ignore=[]):
+	app.openFrame("RIGHT")
+	app.openScrollPane("Current Mods")
+	app.emptyCurrentContainer()
+	app.stopScrollPane()
+	app.stopFrame()
+
 	app.openFrame("LEFT")
 	app.openScrollPane("Available Mods")
 	app.emptyCurrentContainer()
@@ -83,6 +116,7 @@ def populateModList(ignore=[]):
 
 	app.stopScrollPane()
 	app.stopFrame()
+
 
 # Populate Selected Mods - Run after loading an existing mod list
 def populateSelectedMods():
@@ -100,21 +134,28 @@ def populateSelectedMods():
 # Menu Buttons
 def menuButtons(button):
 	if button == "Create New Profile":
+		if not State.isSaved:
+			saveProfile(autosave=True)
+			print("Profile not saved...autosaving!")
 		app.showSubWindow("Create Profile")
 	elif button == "Change Profile":  # TODO Check if current profile is saved
+		if not State.isSaved:
+			saveProfile(autosave=True)
+			print("Profile not saved...autosaving!")
 		State.profileList = util.getAllProfiles()
 		app.changeOptionBox("Profile List", State.profileList)
 		app.showSubWindow("Change Profile")
 	elif button == "Export/Share":
-		shareMenu()
+		app.infoBox("NYI", "")
 	elif button == "Import":
-		pass
-	elif button == "Activate Profile":
-		pass
+		app.showSubWindow("Import Mod List")
+	# elif button == "Activate Profile":
+	#	pass
 	elif button == "Settings":
-		settingsMenu()
+		app.infoBox("NYI", "")
 	elif button == "Quit":
 		app.stop()
+
 
 # Create Profile
 def createProfile():
@@ -122,7 +163,14 @@ def createProfile():
 		if app.getEntry("CreateVersion") is not "":
 			app.hideSubWindow("Create Profile")
 			State.currentProfile = str(app.getEntry("CreateName") + "_" + app.getEntry("CreateVersion"))
-			populateModList()
+			if State.newProfile:
+				State.selectedModNames = []
+				populateModList()
+			else:
+				State.newProfile = True
+			# State update
+			State.isActivated = False
+			State.isSaved = True
 		else:
 			app.errorBox("Need Version", "Please choose a version number!", parent="Create Profile")
 	else:
@@ -133,39 +181,73 @@ def createProfile():
 def changeProfile():
 	State.currentProfile = app.getOptionBox("Profile List")
 	app.hideSubWindow("Change Profile")
+	State.selectedModNames = []  # Clean mods
 	State.profileToLoad = util.parseSavedProfile(State.currentProfile, allMods)
 
 	populateModList()
 	populateSelectedMods()
+
+	# State update
+	State.isActivated = False
+	State.isSaved = True
 
 
 # Share
 def shareMenu():
 	pass
 
+
 # Activate Profile
 def activateProfile():
-	# TODO confirm saved
+	if State.isSaved:
+		pass
+	else:
+		saveProfile(autosave=True)
+		print("Profile not saved...autosaving!")
+
 	State.settingsFileDict["Mods"] = State.modString
 	settingsString = util.compileSettings(State.settingsFileDict)
 	util.writeSettingsFile(settingsString)
+	State.isActivated = True
+
 
 # Settings
 def settingsMenu():
-	print(State.selectedModNames)  #DEBUG
+	print(State.selectedModNames)  # DEBUG
 
 
 # Save Profile
-def saveProfile():
-	pathList = util.nameListToPathList(State.selectedModNames, allMods)
-	# TODO Make sure a profile is selected and the mod list is not empty
-	State.modString = util.pathListToString(pathList)
-	file = open(setup.save_folder_path + State.currentProfile + ".txt", "w")
-	file.write(State.modString)
+def saveProfile(autosave=False):
+	if State.currentProfile != "":
+		if State.selectedModNames != []:
+			pathList = util.nameListToPathList(State.selectedModNames, allMods)
+			State.modString = util.pathListToString(pathList)
+			file = open(setup.save_folder_path + State.currentProfile + ".txt", "w")
+			file.write(State.modString)
+			State.isSaved = True
+		else:
+			if not autosave:
+				app.infoBox("No mods selected", "No mods selected")
+	else:
+		if not autosave:
+			app.infoBox("No profile name", "No profile name")
+
 
 # Import
-def importMenu():
-	pass
+def importModList():
+	app.hideSubWindow("Import Mod List")
+	State.selectedModNames = []  # Clean mods
+	State.settingsFileDict = util.decompileSettings(util.readSettingsFile())
+	State.profileToLoad = util.cleanModString(State.settingsFileDict["Mods"], allMods)
+
+	State.newProfile = False
+	app.showSubWindow("Create Profile")
+
+	populateModList()
+	populateSelectedMods()
+
+
+
 
 # Export
 def exportMenu():
@@ -176,25 +258,21 @@ def exportMenu():
 app.setBg("#6B7A8F")
 app.setFont(family="Verdana")
 
-# Status bar (Saved and Activated)
-app.addStatusbar(fields=2, side="Bottom")
-app.setStatusbar("Not Saved", 0)
-app.setStatusbar("Not Activated", 1)
-
 # Menu bar
 fileMenus = ["Settings", "Quit"]
-profileMenus = ["Create New Profile", "Change Profile", "-", "Import", "Export/Share", "-", "Activate Profile"]
+profileMenus = ["Create New Profile", "Change Profile", "-", "Import", "Export/Share"]
 
 app.addMenuList("File", fileMenus, menuButtons)
 app.addMenuList("Profile", profileMenus, menuButtons)
-
 
 # Frames
 
 # TOP CENTER
 app.startFrame("CENTER_TOP", row=0, column=0, colspan=2)
 
-app.addLabel("TOP")
+app.addLabel("Stellaris Mod List Manager")
+app.addLabel("current_profile", State.currentProfile)
+app.registerEvent(updateStatus)
 # TODO BANNER
 
 app.stopFrame()
@@ -207,7 +285,7 @@ app.startScrollPane("Available Mods")
 # temporary fixes toward forcing a larger size
 app.setScrollPaneHeight("Available Mods", 500)
 app.setScrollPaneSticky("Available Mods", "both")
-#app.addLabel("None loaded")
+# app.addLabel("None loaded")
 
 app.stopScrollPane()
 
@@ -217,9 +295,8 @@ app.stopFrame()
 app.startFrame("RIGHT", row=1, column=1)
 app.setBg("white")
 
-
 app.startScrollPane("Current Mods")
-#app.addLabel("None enabled")
+# app.addLabel("None enabled")
 
 app.stopScrollPane()
 
@@ -232,6 +309,7 @@ app.addNamedButton("Activate", "ActivateBtn", activateProfile)
 app.stopFrame()
 
 # CREATE PROFILE SUBWINDOW
+# TODO clean entry upon creating a new profile
 app.startSubWindow("Create Profile", modal=True)
 app.setSize(400, 250)
 app.addEntry("CreateName")
@@ -241,7 +319,6 @@ app.setEntryDefault("CreateVersion", "Stellaris Version")
 app.addNamedButton("Done", "CreateDone", createProfile)
 app.stopSubWindow()
 
-
 # CHANGE PROFILE SUBWINDOW
 app.startSubWindow("Change Profile", modal=True)
 app.setSize(400, 250)
@@ -249,14 +326,29 @@ app.addOptionBox("Profile List", State.profileList)
 app.addNamedButton("Done", "ChangeDone", changeProfile)
 app.stopSubWindow()
 
+# IMPORT MOD LIST SUBWINDOW
+app.startSubWindow("Import Mod List", modal=True)
+app.setSize(300, 200)
+app.addMessage("Import Label", "This will take whatever mods are currently selected in the Stellaris launcher "
+	"and import it into a profile. \n\nPLEASE CLOSE THE STELLARIS LAUNCHER BEFORE PRESSING OKAY")
+app.addNamedButton("Okay", "ImportOkay", importModList)
+app.stopSubWindow()
+
+# Status bar (Saved and Activated)
+app.addStatusbar(fields=2, side="Bottom")
+app.setStatusbar("Not Saved", 0)
+app.setStatusbarBg("red", 0)
+app.setStatusbar("Not Activated", 1)
+app.setStatusbarBg("red", 1)
+
 
 # EXIT CHECK
 def checkStop():
+	saveProfile(autosave=True)
 	return app.yesNoBox("Confirm Exit", "Are you sure you want to exit the application?")
 
 
 app.setStopFunction(checkStop)  # TODO Check save and activated status
-
 
 
 # RUN APP
