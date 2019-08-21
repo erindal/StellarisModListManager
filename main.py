@@ -4,8 +4,6 @@
 
 
 import setup
-import gui
-import util
 import gui3
 
 
