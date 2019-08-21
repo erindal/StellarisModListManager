@@ -107,4 +107,4 @@ venv.bak/
 *.bat
 
 # Idea folder
-/.idea
+.idea/
