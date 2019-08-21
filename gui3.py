@@ -21,6 +21,8 @@ class State:
 	isSaved = False
 	isActivated = False
 	selectedModNames = []
+	profileToLoad = []
+	profileList = []
 
 
 # Functions
@@ -30,7 +32,7 @@ def updateStatus():
 	pass
 
 # Called to enable mod in app
-def enableModFunc(mod):
+def enableModFunc(mod, reload=False):
 	# Remove from left
 	app.openFrame("LEFT")
 	app.openScrollPane("Available Mods")
@@ -45,7 +47,8 @@ def enableModFunc(mod):
 	app.stopScrollPane()
 	app.stopFrame()
 	# Update internal mod list
-	State.selectedModNames.append(mod)
+	if not reload:
+		State.selectedModNames.append(mod)
 
 # Called to disable mod in app
 def disableModFunc(mod):
@@ -65,19 +68,18 @@ def disableModFunc(mod):
 	# Update internal mod list
 	State.selectedModNames.remove(mod)
 
-# Populate Mod UI - Run to reset the mod list in app, use ignore arg if loading mod list
+# Populate Mod UI - Run to reset the mod list in app
 def populateModList(ignore=[]):
 	app.openFrame("LEFT")
 	app.openScrollPane("Available Mods")
 	app.emptyCurrentContainer()
 
 	for i in allMods:
-		if i.name not in ignore:
-			try:
-				app.addCheckBox(i.name)
-				app.setCheckBoxChangeFunction(i.name, enableModFunc)
-			except:  # TODO catch ONLY appJar ItemLookupError
-				print("Skipping " + i.name)  # This shouldn't happen anymore, if it does there's a bug
+		try:
+			app.addCheckBox(i.name)
+			app.setCheckBoxChangeFunction(i.name, enableModFunc)
+		except:  # TODO catch ONLY appJar ItemLookupError
+			print("Skipping " + i.name)  # This shouldn't happen anymore, if it does there's a bug
 
 	app.stopScrollPane()
 	app.stopFrame()
@@ -88,22 +90,21 @@ def populateSelectedMods():
 	app.openScrollPane("Current Mods")
 	app.emptyCurrentContainer()
 
-	for i in State.selectedModNames:
-		app.addCheckBox(i)
-		app.setCheckBoxChangeFunction(i, disableModFunc)
+	for i in State.profileToLoad:
+		app.setCheckBox(i, callFunction=True)
 
 	app.stopScrollPane()
 	app.stopFrame()
-
-
 
 
 # Menu Buttons
 def menuButtons(button):
 	if button == "Create New Profile":
 		app.showSubWindow("Create Profile")
-	elif button == "Change Profile":
-		changeProfile()
+	elif button == "Change Profile":  # TODO Check if current profile is saved
+		State.profileList = util.getAllProfiles()
+		app.changeOptionBox("Profile List", State.profileList)
+		app.showSubWindow("Change Profile")
 	elif button == "Export/Share":
 		shareMenu()
 	elif button == "Import":
@@ -111,7 +112,7 @@ def menuButtons(button):
 	elif button == "Activate Profile":
 		pass
 	elif button == "Settings":
-		pass
+		settingsMenu()
 	elif button == "Quit":
 		app.stop()
 
@@ -120,7 +121,7 @@ def createProfile():
 	if app.getEntry("CreateName") is not "":
 		if app.getEntry("CreateVersion") is not "":
 			app.hideSubWindow("Create Profile")
-			State.currentProfile = str(app.getEntry("CreateName") + app.getEntry("CreateVersion"))
+			State.currentProfile = str(app.getEntry("CreateName") + "_" + app.getEntry("CreateVersion"))
 			populateModList()
 		else:
 			app.errorBox("Need Version", "Please choose a version number!", parent="Create Profile")
@@ -130,7 +131,13 @@ def createProfile():
 
 # Change Profile
 def changeProfile():
-	pass
+	State.currentProfile = app.getOptionBox("Profile List")
+	app.hideSubWindow("Change Profile")
+	State.profileToLoad = util.parseSavedProfile(State.currentProfile, allMods)
+
+	populateModList()
+	populateSelectedMods()
+
 
 # Share
 def shareMenu():
@@ -138,15 +145,23 @@ def shareMenu():
 
 # Activate Profile
 def activateProfile():
-	pass
+	# TODO confirm saved
+	State.settingsFileDict["Mods"] = State.modString
+	settingsString = util.compileSettings(State.settingsFileDict)
+	util.writeSettingsFile(settingsString)
 
 # Settings
 def settingsMenu():
-	pass
+	print(State.selectedModNames)  #DEBUG
+
 
 # Save Profile
 def saveProfile():
-	pass
+	pathList = util.nameListToPathList(State.selectedModNames, allMods)
+	# TODO Make sure a profile is selected and the mod list is not empty
+	State.modString = util.pathListToString(pathList)
+	file = open(setup.save_folder_path + State.currentProfile + ".txt", "w")
+	file.write(State.modString)
 
 # Import
 def importMenu():
@@ -214,15 +229,24 @@ app.stopFrame()
 app.startFrame("BOTTOM", row=2, column=0, colspan=2)
 app.addNamedButton("Save", "SaveBtn", saveProfile)
 app.addNamedButton("Activate", "ActivateBtn", activateProfile)
-
+app.stopFrame()
 
 # CREATE PROFILE SUBWINDOW
 app.startSubWindow("Create Profile", modal=True)
+app.setSize(400, 250)
 app.addEntry("CreateName")
 app.addEntry("CreateVersion")
 app.setEntryDefault("CreateName", "Profile Name")
 app.setEntryDefault("CreateVersion", "Stellaris Version")
 app.addNamedButton("Done", "CreateDone", createProfile)
+app.stopSubWindow()
+
+
+# CHANGE PROFILE SUBWINDOW
+app.startSubWindow("Change Profile", modal=True)
+app.setSize(400, 250)
+app.addOptionBox("Profile List", State.profileList)
+app.addNamedButton("Done", "ChangeDone", changeProfile)
 app.stopSubWindow()
 
 

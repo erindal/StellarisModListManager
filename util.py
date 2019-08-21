@@ -147,5 +147,31 @@ def pathListToString(pathList):
 	return pathString
 
 
-def nullifier():  # this is nothing at all
-	pass
+def getAllProfiles():
+	currentdir = setup.save_folder_path
+	profileList = []
+
+	for filename in os.listdir(currentdir):  # go through save directory
+		if filename[-4:] == ".txt":  # to ignore sub directories
+			profileList.append(filename[:-4])
+			#print(filename)
+
+	return profileList
+
+
+def parseSavedProfile(profile, modDict):  #returns list of mod names
+	file = open(setup.save_folder_path + profile + ".txt", "r")
+	modString = file.read()
+	tempString = modString.replace('\t"mod/', "")  #clear formatting
+	tempString = tempString.replace('"', "")  #clear quote
+	templist = tempString.split("\n")  #Split by newline
+	returnlist = []
+	for path in templist:
+		if path == "":
+			pass
+		else:
+			for mod in modDict:
+				if mod.path == path:
+					returnlist.append(mod.name)
+
+	return returnlist
