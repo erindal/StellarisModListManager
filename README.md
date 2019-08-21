@@ -3,6 +3,7 @@
 A simple mod list manager for Stellaris.
 
 Built on Python 3.7.4
+
 GUI built with appJar
 
 User Guide (2.0 Beta):
