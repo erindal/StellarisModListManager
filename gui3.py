@@ -138,7 +138,7 @@ def menuButtons(button):
 			saveProfile(autosave=True)
 			print("Profile not saved...autosaving!")
 		app.showSubWindow("Create Profile")
-	elif button == "Change Profile":  # TODO Check if current profile is saved
+	elif button == "Change Profile":
 		if not State.isSaved:
 			saveProfile(autosave=True)
 			print("Profile not saved...autosaving!")
