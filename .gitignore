@@ -105,3 +105,6 @@ venv.bak/
 
 # bat build files
 *.bat
+
+# Idea folder
+/.idea
