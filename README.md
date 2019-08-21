@@ -1,9 +1,6 @@
 # StellarisModListManager
-Update 8/6/19:
-I'm trying to make the profile system work with the gui as well as possible before I release it.
-No ETA, but I think I can release a beta by the end of August.
-If I can't do that, I will release a limited version that will not have the ability to edit the modlist, 
-but still manage your lists you make in the Stellaris launcher using the profile system.
+Update 8/21/19:
+2.0 is pushed to github. I'll compile a release soon with a full write up.
 
 New features (planned):
 
