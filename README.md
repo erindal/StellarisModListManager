@@ -1,40 +1,33 @@
 # StellarisModListManager
-Update 8/21/19:
-2.0 is pushed to github. I'll compile a release soon with a full write up.
 
-New features (planned):
+A simple mod list manager for Stellaris.
 
-- Profile system
+Built on Python 3.7.4
+GUI built with appJar
 
-- Directly edit settings file
+User Guide (2.0 Beta):
 
-- Full UI
-________________________________________________
+Your current mod list is stored in your documents by Stellaris.
+SMLM will store its own copies of any mod lists you create or import as a profile.
+You can edit the list independently in SMLM (WIP) and activate it once you're satisfied.
 
-A simple mod list manager for Stellaris. A full release is WIP.
+To make a mod list:
 
-Built on Python 3.7.2
+The current UI is WIP, so I recommend you use the Stellaris Launcher to select your mods as your normally would.
+Once you've done so, use the Profile>Import menu option.
+There you can enter a name and set the Stellaris version.
+Your mod list is now saved.
 
-User Guide (v0.1):
+To use a mod list:
 
-Your current mod list is stored in your documents by Stellaris. This program will store that file seperately and automate loading it when you want to change you mod list.
+When you start the application, there won't a profile selected.
+You can use the Profile>Change Profile menu option to select a previously created profile.
+Once you've done so, you can then press the Activate button at the bottom.
+This will modify your Stellaris mod list.
 
-To make a modlist and save it:
-1. Select your mods as you normally would in the Stellaris Launcher
-2. Close the launcher (this is important)
-3. Run the program, type save
-4. Enter a name
-5. You're done
+Upon changing profile, the right side of the screen will show active mods.
+The left side will show available mods.
 
-The list is now stored in a folder under the same directory as your settings.
+Previous users:
 
-You can now open the launcher, change your mod list, close it, and save a new mod list.
-
-To load a list again, type load, then enter the name you saved the list under (the program will give you a file list if you forget).
-
-You can also type "read" to list what mods are currently enabled.
-
-For v0.2+ Users:
-Type 'gui' in the command prompt after running main.exe. This will launch a gui window that will allow you load and save your modlists.
-You still must create the initial list in the Stellaris launcher, then close the launcher, before saving it.
-Clicking the read button will output your modlist into the console window.
+If you have a mod list made with a pre 2.0 version, load it into Stellaris with the old version and then use the import option in 2.0+ 
