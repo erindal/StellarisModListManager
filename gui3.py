@@ -7,7 +7,7 @@ from time import sleep
 import util
 import setup
 
-app = gui("Stellaris Mod List Manager", "800x650")
+app = gui("Stellaris Mod List Manager", "800x700")
 
 # Objects
 
@@ -280,6 +280,7 @@ app.stopFrame()
 # LEFT FRAME
 app.startFrame("LEFT", row=1, column=0)
 app.setBg("white")
+app.addLabel("l1", "Available Mods")
 
 app.startScrollPane("Available Mods")
 # temporary fixes toward forcing a larger size
@@ -294,6 +295,7 @@ app.stopFrame()
 # RIGHT FRAME
 app.startFrame("RIGHT", row=1, column=1)
 app.setBg("white")
+app.addLabel("r1", " Current Mods")
 
 app.startScrollPane("Current Mods")
 # app.addLabel("None enabled")
