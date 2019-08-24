@@ -10,7 +10,7 @@ User Guide (2.0 Beta):
 
 Your current mod list is stored in your documents by Stellaris.
 SMLM will store its own copies of any mod lists you create or import as a profile.
-You can edit the list independently in SMLM (WIP) and activate it once you're satisfied.
+You can edit the list independently in SMLM and activate it once you're satisfied.
 
 To make a mod list:
 
