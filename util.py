@@ -27,9 +27,11 @@ def writeSettingsFile(stringtowrite):  # takes string, writes to settings file
 
 def decompileSettings(settingsString):  # takes settings file string, returns separated dictionary of settings file
 	settingsDict = {}
+	try:
+		index1 = settingsString.find("last_mods={")  # finds beginning of mod list
+	except:  #What specific exception is this
+		print("Please select at least one mod in your Stellaris launcher and close it, then restart the app.")
 
-	index1 = settingsString.find("last_mods={")  # finds beginning of mod list
-	# TODO HANDLE THIS NOT EXISTING
 	index2 = settingsString.find("}\nautosave")  # finds end of mod list
 
 	settingsDict["Beginning"] = settingsString[0:index1 + 11]  # first part of settings file
