@@ -1,6 +1,6 @@
 # StellarisModListManager
 
-A simple mod list manager for Stellaris.
+A simple mod list manager for Stellaris. Currently only supports Windows OS.
 
 Built on Python 3.7.4
 
