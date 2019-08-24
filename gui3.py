@@ -47,6 +47,15 @@ def updateStatus():
 		app.setStatusbar("Not Activated", 1)
 		app.setStatusbarBg("red", 1)
 
+# Fix enable/disable bug
+def fixCheckboxes():
+	app.openFrame("LEFT")
+	app.openScrollPane("Available Mods")
+	for i in allMods:
+		app.addCheckBox("NULL")
+		app.removeCheckBox("NULL")
+	app.stopScrollPane()
+	app.stopFrame()
 
 # Called to enable mod in app
 def enableModFunc(mod, reload=False):
@@ -122,7 +131,7 @@ def populateModList(ignore=[]):
 def populateSelectedMods():
 	app.openFrame("RIGHT")
 	app.openScrollPane("Current Mods")
-	app.emptyCurrentContainer()
+	#app.emptyCurrentContainer()
 
 	for i in State.profileToLoad:
 		app.setCheckBox(i, callFunction=True)
@@ -184,8 +193,9 @@ def changeProfile():
 	State.selectedModNames = []  # Clean mods
 	State.profileToLoad = util.parseSavedProfile(State.currentProfile, allMods)
 
-	populateModList()
-	populateSelectedMods()
+	app.queueFunction(populateModList)
+	app.queueFunction(populateSelectedMods)
+	app.queueFunction(fixCheckboxes)
 
 	# State update
 	State.isActivated = False
