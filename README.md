@@ -14,10 +14,15 @@ You can edit the list independently in SMLM (WIP) and activate it once you're sa
 
 To make a mod list:
 
-The current UI is WIP, so I recommend you use the Stellaris Launcher to select your mods as your normally would.
+There are two ways:
+
+You can use the Stellaris Launcher to select your mods as your normally would.
 Once you've done so, use the Profile>Import menu option.
 There you can enter a name and set the Stellaris version.
 Your mod list is now saved.
+
+You can also create a new profile in SMLM by going to Profile>Create New Profile.
+There you can select your mods from the list on the left.
 
 To use a mod list:
 
