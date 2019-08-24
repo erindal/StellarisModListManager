@@ -14,7 +14,7 @@ save_folder_path = "C:/Users/" + currentuser + "/Documents/Paradox Interactive/S
 def confirmStellaris():  # returns false if no stellaris dir exists or if cannot create modlist dir
 
     # Ensure settings file exists
-    if not os.path.exists("C:/Users/" + currentuser + "/Documents/Paradox Interactive/Stellaris/settings.txt"):
+    if not os.path.exists(settings_path):
         print("You must run Stellaris at least once before using this program. Exiting...")
         return False
 

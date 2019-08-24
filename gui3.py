@@ -175,11 +175,12 @@ def createProfile():
 			if State.newProfile:
 				State.selectedModNames = []
 				populateModList()
+				fixCheckboxes()
 			else:
 				State.newProfile = True
 			# State update
 			State.isActivated = False
-			State.isSaved = True
+			State.isSaved = False
 		else:
 			app.errorBox("Need Version", "Please choose a version number!", parent="Create Profile")
 	else:
@@ -253,11 +254,9 @@ def importModList():
 	State.newProfile = False
 	app.showSubWindow("Create Profile")
 
-	populateModList()
-	populateSelectedMods()
-
-
-
+	app.queueFunction(populateModList)
+	app.queueFunction(populateSelectedMods)
+	app.queueFunction(fixCheckboxes)
 
 # Export
 def exportMenu():
@@ -308,7 +307,10 @@ app.setBg("white")
 app.addLabel("r1", " Current Mods")
 
 app.startScrollPane("Current Mods")
-# app.addLabel("None enabled")
+
+# temporary fixes toward forcing a larger size
+app.setScrollPaneHeight("Current Mods", 500)
+app.setScrollPaneSticky("Current Mods", "both")
 
 app.stopScrollPane()
 
@@ -357,10 +359,12 @@ app.setStatusbarBg("red", 1)
 # EXIT CHECK
 def checkStop():
 	saveProfile(autosave=True)
+	if not State.isActivated:
+		app.infoBox("Warning!", "Your selected mod list has not been activated.")
 	return app.yesNoBox("Confirm Exit", "Are you sure you want to exit the application?")
 
 
-app.setStopFunction(checkStop)  # TODO Check save and activated status
+app.setStopFunction(checkStop)
 
 
 # RUN APP
