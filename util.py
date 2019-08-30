@@ -12,14 +12,14 @@ class Mod:  # holds mod info
 		self.path = path
 
 def readSettingsFile():  # returns settings file string
-	settings_file = open(setup.settings_path, 'r')
+	settings_file = open(setup.pathSettings, 'r')
 	fileString = settings_file.read()
 	settings_file.close()
 	return fileString
 
 
 def writeSettingsFile(stringtowrite):  # takes string, writes to settings file
-	settings_file = open(setup.settings_path, 'w')
+	settings_file = open(setup.pathSettings, 'w')
 	settings_file.write(stringtowrite)
 	settings_file.close()
 	print("Updated settings file")
@@ -64,7 +64,7 @@ def modPathToName(modPath):  # takes mod path and returns the mod name as a stri
 	# strip quotes
 	modPath = modPath.replace('"', '')
 
-	currentmodfile = "C:/Users/" + setup.currentuser + "/Documents/Paradox Interactive/Stellaris/" + modPath
+	currentmodfile = setup.pathStellarisFolder + modPath
 	try:
 		tempmodfile = open(currentmodfile, 'r')
 	except FileNotFoundError:
@@ -85,7 +85,7 @@ def modPathToName(modPath):  # takes mod path and returns the mod name as a stri
 
 
 def getAllMods():  # returns list of Mod classes
-	currentdir = setup.mod_folder_path
+	currentdir = setup.pathModFolder
 
 	allModsList = []
 
@@ -150,7 +150,7 @@ def pathListToString(pathList):
 
 
 def getAllProfiles():
-	currentdir = setup.save_folder_path
+	currentdir = setup.pathSaveFolder
 	profileList = []
 
 	for filename in os.listdir(currentdir):  # go through save directory
@@ -162,7 +162,7 @@ def getAllProfiles():
 
 
 def parseSavedProfile(profile, modDict):  #returns list of mod names
-	file = open(setup.save_folder_path + profile + ".txt", "r")
+	file = open(setup.pathSaveFolder + profile + ".txt", "r")
 	modString = file.read()
 
 	returnlist = cleanModString(modString, modDict)

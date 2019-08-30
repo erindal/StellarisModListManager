@@ -233,7 +233,7 @@ def saveProfile(autosave=False):
 		if State.selectedModNames != []:
 			pathList = util.nameListToPathList(State.selectedModNames, allMods)
 			State.modString = util.pathListToString(pathList)
-			file = open(setup.save_folder_path + State.currentProfile + ".txt", "w")
+			file = open(setup.pathSaveFolder + State.currentProfile + ".txt", "w")
 			file.write(State.modString)
 			State.isSaved = True
 		else:

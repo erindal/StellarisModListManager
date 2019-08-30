@@ -5,16 +5,17 @@
 import getpass
 import os
 
-currentuser = getpass.getuser()
-settings_path = "C:/Users/" + currentuser + "/Documents/Paradox Interactive/Stellaris/settings.txt"
-mod_folder_path = "C:/Users/" + currentuser + "/Documents/Paradox Interactive/Stellaris/mod/"
-save_folder_path = "C:/Users/" + currentuser + "/Documents/Paradox Interactive/Stellaris/SMLM/"
+currentUser = getpass.getuser()
+pathSettings = "C:/Users/" + currentUser + "/Documents/Paradox Interactive/Stellaris/settings.txt"
+pathModFolder = "C:/Users/" + currentUser + "/Documents/Paradox Interactive/Stellaris/mod/"
+pathSaveFolder = "C:/Users/" + currentUser + "/Documents/Paradox Interactive/Stellaris/SMLM/"
+pathStellarisFolder = "C:/Users/" + currentUser + "/Documents/Paradox Interactive/Stellaris/"
 
 
 def confirmStellaris():  # returns false if no stellaris dir exists or if cannot create modlist dir
 
     # Ensure settings file exists
-    if not os.path.exists(settings_path):
+    if not os.path.exists(pathSettings):
         print("You must run Stellaris at least once before using this program. Exiting...")
         return False
 
@@ -22,8 +23,8 @@ def confirmStellaris():  # returns false if no stellaris dir exists or if cannot
         print("Stellaris folder detected.")
 
         # Create saved folder directory
-        if not os.path.exists(save_folder_path):
-            path = save_folder_path
+        if not os.path.exists(pathSaveFolder):
+            path = pathSaveFolder
             try:
                 os.mkdir(path)
             except:

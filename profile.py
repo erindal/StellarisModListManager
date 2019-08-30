@@ -3,10 +3,10 @@
 # This code is under the MIT License, however if you use it, some notification would be appreciated!
 
 class Profile:  # Holds data for current profile and contains various functions
-	def __init__(self, filename):
+	def __init__(self, fileName):
 		self.name = ""
 		self.version = ""
-		self.fileName = filename
+		self.fileName = fileName
 		self.modList = []
 		self.settingsText = ""
 
