@@ -2,6 +2,8 @@
 
 A simple mod list manager for Stellaris 2.3. Currently only supports Windows OS.
 
+NEWS 11/3/19: A rebuilt version will come for the new launcher. It should be a lot easier to do as all the data is in a json format.
+
 Built on Python 3.7.4
 
 GUI built with appJar
