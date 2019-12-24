@@ -9,6 +9,4 @@ Version 3 Guide:
 Download and unzip from the Releases section.
 Run main.exe
 
-From here you can save whatever mods you have selected in your Stellaris launcher
-Or sort your load order
-Or load a previously saved mod setup
+From here you can save whatever mods you have selected in your Stellaris launcher, or sort your load order, or load a previously saved mod setup
