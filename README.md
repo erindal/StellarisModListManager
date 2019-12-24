@@ -2,7 +2,7 @@
 
 A simple mod list manager for Stellaris 2.3. Currently only supports Windows OS.
 
-NEWS 12/23/19: Work on new version has begun. Format changes make things fairly simple, however I'd like to include a larger code and feature rework so the update may take a while. Will update when there's a functioning build.
+NEWS 12/23/19: A beta for version 3 is out. Will update this shortly.
 
 Built on Python 3.7.4
 
