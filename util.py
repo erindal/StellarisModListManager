@@ -4,183 +4,164 @@
 
 import setup
 import os
+import json
 
 
 class Mod:  # holds mod info
-	def __init__(self, name, path):
+	def __init__(self, uid, name, path):
 		self.name = name
+		self.uid = uid
 		self.path = path
-
-def readSettingsFile():  # returns settings file string
-	settings_file = open(setup.pathSettings, 'r')
-	fileString = settings_file.read()
-	settings_file.close()
-	return fileString
-
-
-def writeSettingsFile(stringtowrite):  # takes string, writes to settings file
-	settings_file = open(setup.pathSettings, 'w')
-	settings_file.write(stringtowrite)
-	settings_file.close()
-	print("Updated settings file")
-
-
-def decompileSettings(settingsString):  # takes settings file string, returns separated dictionary of settings file
-	settingsDict = {}
-
-	index1 = settingsString.find("last_mods={")  # finds beginning of mod list
-	if index1 == -1:
-		print("Please select at least one mod in your Stellaris launcher and close it, then restart the app.")
-		input("Press enter to quit")
-		raise SystemExit
-
-	index2 = settingsString.find("}\nautosave")  # finds end of mod list
-
-	settingsDict["Beginning"] = settingsString[0:index1 + 11]  # first part of settings file
-
-	settingsDict["Mods"] = settingsString[index1 + 12:index2 - 1]  # this is the indented mod list
-
-	settingsDict["End"] = settingsString[index2:]  # second part of settings file
-
-	return settingsDict
-
-
-def compileSettings(settingsDict):  # takes settings dictionary, returns complete string for settings file
-	settingsString = settingsDict["Beginning"] + settingsDict["Mods"] + settingsDict["End"]
-	return settingsString
-
-
-def readMods(settingsDict):  # takes settings dict returns list of mod name strings
-	modString = settingsDict["Mods"]
-	modString = modString.replace("\t", "")  # strip tabs
-	modList = modString.split("\n")  # separate to list
-	modNameList = []
-
-	for i in modList:
-		modNameList.append(modPathToName(i))
-
-	return modNameList
-
-
-def modPathToName(modPath):  # takes mod path and returns the mod name as a string
-	# strip quotes
-	modPath = modPath.replace('"', '')
-
-	currentmodfile = setup.pathStellarisFolder + modPath
-	try:
-		tempmodfile = open(currentmodfile, 'r')
-	except FileNotFoundError:
-		print("An invalid mod path exists!")
-		print(tempmodfile)
-		return
-	except PermissionError:
-		print("Permission Error")
-		print(tempmodfile)
-		print("SMLM does not have access to this file.")
-		return
-
-	# TODO - search for name=" instead
-	lineone = tempmodfile.readline()
-	modname = lineone.replace('name="', '')
-	modname = modname.replace('"\n', '')
-	return modname
-
-
-def getAllMods():  # returns list of Mod classes
-	currentdir = setup.pathModFolder
-
+		
+		
+class GameData:
+	def __init__(self):
+		self.loadOrder = getLoadOrder()
+		self.activeMods = getSelectedMods()
+		self.allModsList = getModData()
+		
+	def sortModOrder(self):
+		sortOrder = []
+	
+		# Sort
+		self.allModsList.sort(reverse=True, key=sortModObj)
+	
+		# Write uid
+		for mod in self.allModsList:
+			sortOrder.append(mod.uid)
+		
+		# Update data
+		self.loadOrder = sortOrder
+		
+	def removeMod(self, uid):
+		for mod in self.allModsList:
+			if mod.uid == uid:
+				temp = mod.path
+				break
+	
+		self.activeMods.remove(temp)
+		
+	def addMod(self, uid):
+		for mod in self.allModsList:
+			if mod.uid == uid:
+				temp = mod.path
+				break
+				
+		self.activeMods.append(temp)
+		
+	def displayOrderedActiveMods(self):
+		for uid in self.loadOrder:
+			for mod in self.allModsList:
+				if uid == mod.uid:
+					if mod.path in self.activeMods:
+						print(mod.name)
+		
+	def writeAllData(self):
+		writeModOrder(self.loadOrder)
+		writeModList(self.activeMods)
+		
+	def importData(self, filePath):
+		
+		saveFile = open(filePath, 'r')
+		
+		dataDict = json.load(saveFile)
+		
+		self.loadOrder = dataDict['load_order']
+		self.activeMods = dataDict['loaded_mods']
+		
+		saveFile.close()
+		
+	def exportData(self, fileTitle):
+		
+		saveFile = open(setup.pathSaveFolder + fileTitle + ".json_smlm", "w")
+		
+		dataDict = {'load_order':self.loadOrder, 'loaded_mods':self.activeMods}
+		
+		json.dump(dataDict, saveFile)
+		
+		saveFile.close()
+		
+		
+		
+def getModData(): # Returns list of Mod objects of all installed mods
 	allModsList = []
+	
+	# Extract data
+	modDataFile = open(setup.pathModData, 'r')
+	modData = json.load(modDataFile)
+	modDataFile.close()
+	
+	# Get needed mod data
+	for mod in modData:
+		name = modData[mod]["displayName"]
+		try:
+			path = modData[mod]["gameRegistryId"]
+		except KeyError: # Handle missing path
+			print("")
+			print("Missing game reg id!")
+			print("This mod was not installed correctly!")
+			print("You should unsubscribe and clear your .../Stellaris/mod/ folder to fix this")
+			print("Back up the folder first, especially if you've ever made mods yourself")
+			print(name)
+			print("")
+			
+			path = None
+		
+		
+		
+		allModsList.append(Mod(mod, name, path)) # mod is the uid
+		
+	return allModsList	
 
-	for filename in os.listdir(currentdir):  # go through mod directory
-		if filename[-4:] == ".mod":  # to ignore mod directories
-			try:
-				tempfile = open(currentdir + filename, 'r')
+def getLoadOrder(): # Returns current load order in list form, using mod's uid
+	modOrder = []
+	
+	# Extract data
+	loadOrderFile = open(setup.pathLoadOrder, 'r')
+	loadOrderData = json.load(loadOrderFile)
+	loadOrderFile.close()
+	
+	modOrder = loadOrderData["modsOrder"]
+	
+	return modOrder
+	
+def getSelectedMods(): # Returns current mod list in list form, using mod's path
+	modList = []
+	
+	# Extract data
+	modListFile = open(setup.pathModList, 'r')
+	modListData = json.load(modListFile)
+	modListFile.close()
+	
+	modList = modListData["enabled_mods"] # WHY IS THIS INCONSISTENT ??? Come on paradox
+	
+	return modList	
+	
+def writeModOrder(modOrder):
+	# Open file
+	loadOrderFile = open(setup.pathLoadOrder, 'r+')
+	loadOrderData = json.load(loadOrderFile)
+	loadOrderData["modsOrder"] = modOrder
+	loadOrderFile.seek(0)
+	json.dump(loadOrderData, loadOrderFile)
+	loadOrderFile.truncate() # Technically this shouldn't be necessary but just in case
+	loadOrderFile.close()
+	print("Wrote updated load order")
 
-				# clean mod name
-				lineone = tempfile.readline()
-				modname = lineone.replace('name="', '')
-				modname = modname.replace('"\n', '')
+	
+def writeModList(modList):
+	# Open file
+	modListFile = open(setup.pathModList, 'r+')
+	modListData = json.load(modListFile)
+	modListData["enabled_mods"] = modList
+	modListFile.seek(0)
+	json.dump(modListData, modListFile)
+	modListFile.truncate()
+	modListFile.close()
+	print("Wrote updated mod list")
+	
 
-				# create class with name and path
-				allModsList.append(Mod(name=modname, path=filename))
-
-			except PermissionError:
-				print("Permission Error")
-				print(filename)
-				print("SMLM does not have access to this file.")
-
-	return allModsList
-
-
-def sortModList(val):  # use as a key
+def sortModObj(val):  # use as a key
 	return val.name
 
 
-def listModNames(modObjList):
-	for i in modObjList:
-		print(i.name)
-
-
-# check boxes to path funcs
-def boxDictToNameList(boxDict):
-	nameList = []
-
-	for i in boxDict:
-		if boxDict[i] == True:
-			nameList.append(i)
-
-	return nameList
-
-
-def nameListToPathList(nameList, allMods):
-	pathList = []
-
-	for i in allMods:
-		if i.name in nameList:
-			pathList.append(i.path)
-
-	return pathList
-
-
-def pathListToString(pathList):
-	pathString = "\n"
-
-	for i in pathList:
-		pathString = pathString + '\t"mod/' + i + '"\n'
-
-	return pathString
-
-
-def getAllProfiles():
-	currentdir = setup.pathSaveFolder
-	profileList = []
-
-	for filename in os.listdir(currentdir):  # go through save directory
-		if filename[-4:] == ".txt":  # to ignore sub directories
-			profileList.append(filename[:-4])
-			#print(filename)
-
-	return profileList
-
-
-def parseSavedProfile(profile, modDict):  #returns list of mod names
-	file = open(setup.pathSaveFolder + profile + ".txt", "r")
-	modString = file.read()
-
-	returnlist = cleanModString(modString, modDict)
-	return returnlist
-
-def cleanModString(modString, modDict):
-	tempString = modString.replace('\t"mod/', "")  # clear formatting
-	tempString = tempString.replace('"', "")  # clear quote
-	templist = tempString.split("\n")  # Split by newline
-	returnlist = []
-	for path in templist:
-		if path == "":
-			pass
-		else:
-			for mod in modDict:
-				if mod.path == path:
-					returnlist.append(mod.name)
-
-	return returnlist

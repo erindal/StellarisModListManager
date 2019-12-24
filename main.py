@@ -4,16 +4,13 @@
 
 
 import setup
-import gui3
-
+import gui_cmd
 
 def run():
-    doRun = setup.confirmStellaris()
-    if doRun:
-        #gui.start()
-        gui3.runApp()
-
-
+	doRun = setup.confirmStellaris()
+	isRunning = setup.isStellarisRunning()
+	if doRun and not isRunning:
+		gui_cmd.appLoop()
 
 if __name__ == "__main__":
-    run()
+	run()
