@@ -19,6 +19,7 @@ class GameData:
 		self.loadOrder = getLoadOrder()
 		self.activeMods = getSelectedMods()
 		self.allModsList = getModData()
+		self.shareLoadOrder = []
 		
 	def sortModOrder(self):
 		sortOrder = []
@@ -55,6 +56,16 @@ class GameData:
 				if uid == mod.uid:
 					if mod.path in self.activeMods:
 						print(mod.name)
+		
+	def updateLoadOrder(self):
+		self.shareLoadOrder = []
+		
+		for uid in self.loadOrder:
+			for mod in self.allModsList:
+				if uid == mod.uid:
+					if mod.path in self.activeMods:
+						self.shareLoadOrder.append(mod.uid)
+		
 		
 	def writeAllData(self):
 		writeModOrder(self.loadOrder)
