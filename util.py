@@ -4,7 +4,8 @@
 
 import setup
 import json
-
+import requests
+import urllib.request as url_req
 
 class Mod:  # holds mod info
 	def __init__(self, uid, name, path):
@@ -19,7 +20,7 @@ class GameData:
 		self.active_mods = get_selected_mods()
 		self.all_mods_list = get_mod_data()
 		self.share_load_order = []
-		
+
 	def sort_mod_order(self):
 		sort_order = []
 	
@@ -80,19 +81,43 @@ class GameData:
 		
 		save_file.close()
 		
-	def exportData(self, fileTitle):
+	def export_data(self, file_title):
 		
-		save_file = open(setup.path_save_folder + fileTitle + ".json_smlm", "w")
+		save_file = open(setup.path_save_folder + file_title + ".json_smlm", "w")
 		
-		data_dict = {'load_order':self.load_order, 'loaded_mods':self.active_mods}
+		data_dict = {'load_order': self.load_order, 'loaded_mods': self.active_mods}
 		
 		json.dump(data_dict, save_file)
 		
 		save_file.close()
-		
-		
-		
-def get_mod_data(): # Returns list of Mod objects of all installed mods
+
+	def create_paste(self):
+		data_dict = {'load_order': self.load_order, 'loaded_mods': self.active_mods}
+
+		paste_data = json.dumps(data_dict)
+
+		paste_api_end = "https://pastebin.com/api/api_post.php"
+		paste_api_key = "da4c9e0d5d5470ea2c8c20197eeb28f2"
+
+		data = {'api_dev_key': paste_api_key, 'api_option': 'paste', 'api_paste_code': paste_data}
+
+		r = requests.post(url=paste_api_end, data=data)
+		paste_code = r.text
+
+		return paste_code
+
+	def read_paste(self, share_code):  # TODO HANDLE BAD CODES
+		response = url_req.urlopen('https://pastebin.com/raw/'+share_code)
+		data = response.read().decode('UTF-8')
+		print(data)
+
+		data_dict = json.loads(data)
+
+		self.load_order = data_dict['load_order']
+		self.active_mods = data_dict['loaded_mods']
+
+
+def get_mod_data():  # Returns list of Mod objects of all installed mods
 	all_mods_list = []
 	
 	# Extract data
@@ -116,12 +141,12 @@ def get_mod_data(): # Returns list of Mod objects of all installed mods
 			
 			path = None
 
-		all_mods_list.append(Mod(mod, name, path)) # mod is the uid
+		all_mods_list.append(Mod(mod, name, path))  # mod is the uid
 		
 	return all_mods_list
 
 
-def get_load_order(): # Returns current load order in list form, using mod's uid
+def get_load_order():  # Returns current load order in list form, using mod's uid
 	mod_order = []
 	
 	# Extract data
@@ -134,7 +159,7 @@ def get_load_order(): # Returns current load order in list form, using mod's uid
 	return mod_order
 
 
-def get_selected_mods(): # Returns current mod list in list form, using mod's path
+def get_selected_mods():  # Returns current mod list in list form, using mod's path
 	mod_list = []
 	
 	# Extract data
@@ -142,7 +167,7 @@ def get_selected_mods(): # Returns current mod list in list form, using mod's pa
 	mod_list_data = json.load(mod_list_file)
 	mod_list_file.close()
 	
-	mod_list = mod_list_data["enabled_mods"] # WHY IS THIS INCONSISTENT ??? Come on paradox
+	mod_list = mod_list_data["enabled_mods"]  # WHY IS THIS INCONSISTENT ??? Come on paradox
 	
 	return mod_list
 
