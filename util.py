@@ -3,7 +3,6 @@
 # This code is under the MIT License, however if you use it, some notification would be appreciated!
 
 import setup
-import os
 import json
 
 
@@ -16,97 +15,96 @@ class Mod:  # holds mod info
 		
 class GameData:
 	def __init__(self):
-		self.loadOrder = getLoadOrder()
-		self.activeMods = getSelectedMods()
-		self.allModsList = getModData()
-		self.shareLoadOrder = []
+		self.load_order = get_load_order()
+		self.active_mods = get_selected_mods()
+		self.all_mods_list = get_mod_data()
+		self.share_load_order = []
 		
-	def sortModOrder(self):
-		sortOrder = []
+	def sort_mod_order(self):
+		sort_order = []
 	
 		# Sort
-		self.allModsList.sort(reverse=True, key=sortModObj)
+		self.all_mods_list.sort(reverse=True, key=sort_mod_obj)
 	
 		# Write uid
-		for mod in self.allModsList:
-			sortOrder.append(mod.uid)
+		for mod in self.all_mods_list:
+			sort_order.append(mod.uid)
 		
 		# Update data
-		self.loadOrder = sortOrder
+		self.load_order = sort_order
 		
-	def removeMod(self, uid):
-		for mod in self.allModsList:
+	def remove_mod(self, uid):
+		for mod in self.all_mods_list:
 			if mod.uid == uid:
 				temp = mod.path
 				break
 	
-		self.activeMods.remove(temp)
+		self.active_mods.remove(temp)
 		
-	def addMod(self, uid):
-		for mod in self.allModsList:
+	def add_mod(self, uid):
+		for mod in self.all_mods_list:
 			if mod.uid == uid:
 				temp = mod.path
 				break
 				
-		self.activeMods.append(temp)
+		self.active_mods.append(temp)
 		
-	def displayOrderedActiveMods(self):
-		for uid in self.loadOrder:
-			for mod in self.allModsList:
+	def display_ordered_active_mods(self):
+		for uid in self.load_order:
+			for mod in self.all_mods_list:
 				if uid == mod.uid:
-					if mod.path in self.activeMods:
+					if mod.path in self.active_mods:
 						print(mod.name)
 		
-	def updateLoadOrder(self):
-		self.shareLoadOrder = []
+	def update_load_order(self):
+		self.share_load_order = []
 		
-		for uid in self.loadOrder:
-			for mod in self.allModsList:
+		for uid in self.load_order:
+			for mod in self.all_mods_list:
 				if uid == mod.uid:
-					if mod.path in self.activeMods:
-						self.shareLoadOrder.append(mod.uid)
+					if mod.path in self.active_mods:
+						self.share_load_order.append(mod.uid)
+
+	def write_all_data(self):
+		write_mod_order(self.load_order)
+		write_mod_list(self.active_mods)
 		
+	def import_data(self, file_path):
 		
-	def writeAllData(self):
-		writeModOrder(self.loadOrder)
-		writeModList(self.activeMods)
+		save_file = open(file_path, 'r')
 		
-	def importData(self, filePath):
+		data_dict = json.load(save_file)
 		
-		saveFile = open(filePath, 'r')
+		self.load_order = data_dict['load_order']
+		self.active_mods = data_dict['loaded_mods']
 		
-		dataDict = json.load(saveFile)
-		
-		self.loadOrder = dataDict['load_order']
-		self.activeMods = dataDict['loaded_mods']
-		
-		saveFile.close()
+		save_file.close()
 		
 	def exportData(self, fileTitle):
 		
-		saveFile = open(setup.pathSaveFolder + fileTitle + ".json_smlm", "w")
+		save_file = open(setup.path_save_folder + fileTitle + ".json_smlm", "w")
 		
-		dataDict = {'load_order':self.loadOrder, 'loaded_mods':self.activeMods}
+		data_dict = {'load_order':self.load_order, 'loaded_mods':self.active_mods}
 		
-		json.dump(dataDict, saveFile)
+		json.dump(data_dict, save_file)
 		
-		saveFile.close()
+		save_file.close()
 		
 		
 		
-def getModData(): # Returns list of Mod objects of all installed mods
-	allModsList = []
+def get_mod_data(): # Returns list of Mod objects of all installed mods
+	all_mods_list = []
 	
 	# Extract data
-	modDataFile = open(setup.pathModData, 'r')
-	modData = json.load(modDataFile)
-	modDataFile.close()
+	mod_data_file = open(setup.path_mod_data, 'r')
+	mod_data = json.load(mod_data_file)
+	mod_data_file.close()
 	
 	# Get needed mod data
-	for mod in modData:
-		name = modData[mod]["displayName"]
+	for mod in mod_data:
+		name = mod_data[mod]["displayName"]
 		try:
-			path = modData[mod]["gameRegistryId"]
+			path = mod_data[mod]["gameRegistryId"]
 		except KeyError: # Handle missing path
 			print("")
 			print("Missing game reg id!")
@@ -117,62 +115,63 @@ def getModData(): # Returns list of Mod objects of all installed mods
 			print("")
 			
 			path = None
-		
-		
-		
-		allModsList.append(Mod(mod, name, path)) # mod is the uid
-		
-	return allModsList	
 
-def getLoadOrder(): # Returns current load order in list form, using mod's uid
-	modOrder = []
+		all_mods_list.append(Mod(mod, name, path)) # mod is the uid
+		
+	return all_mods_list
+
+
+def get_load_order(): # Returns current load order in list form, using mod's uid
+	mod_order = []
 	
 	# Extract data
-	loadOrderFile = open(setup.pathLoadOrder, 'r')
-	loadOrderData = json.load(loadOrderFile)
-	loadOrderFile.close()
+	load_order_file = open(setup.path_load_order, 'r')
+	load_order_data = json.load(load_order_file)
+	load_order_file.close()
 	
-	modOrder = loadOrderData["modsOrder"]
+	mod_order = load_order_data["modsOrder"]
 	
-	return modOrder
-	
-def getSelectedMods(): # Returns current mod list in list form, using mod's path
-	modList = []
+	return mod_order
+
+
+def get_selected_mods(): # Returns current mod list in list form, using mod's path
+	mod_list = []
 	
 	# Extract data
-	modListFile = open(setup.pathModList, 'r')
-	modListData = json.load(modListFile)
-	modListFile.close()
+	mod_list_file = open(setup.path_mod_list, 'r')
+	mod_list_data = json.load(mod_list_file)
+	mod_list_file.close()
 	
-	modList = modListData["enabled_mods"] # WHY IS THIS INCONSISTENT ??? Come on paradox
+	mod_list = mod_list_data["enabled_mods"] # WHY IS THIS INCONSISTENT ??? Come on paradox
 	
-	return modList	
-	
-def writeModOrder(modOrder):
+	return mod_list
+
+
+def write_mod_order(mod_order):
 	# Open file
-	loadOrderFile = open(setup.pathLoadOrder, 'r+')
-	loadOrderData = json.load(loadOrderFile)
-	loadOrderData["modsOrder"] = modOrder
-	loadOrderFile.seek(0)
-	json.dump(loadOrderData, loadOrderFile)
-	loadOrderFile.truncate() # Technically this shouldn't be necessary but just in case
-	loadOrderFile.close()
+	load_order_file = open(setup.path_load_order, 'r+')
+	load_order_data = json.load(load_order_file)
+	load_order_data["modsOrder"] = mod_order
+	load_order_file.seek(0)
+	json.dump(load_order_data, load_order_file)
+	load_order_file.truncate() # Technically this shouldn't be necessary but just in case
+	load_order_file.close()
 	print("Wrote updated load order")
 
 	
-def writeModList(modList):
+def write_mod_list(mod_list):
 	# Open file
-	modListFile = open(setup.pathModList, 'r+')
-	modListData = json.load(modListFile)
-	modListData["enabled_mods"] = modList
-	modListFile.seek(0)
-	json.dump(modListData, modListFile)
-	modListFile.truncate()
-	modListFile.close()
+	mod_list_file = open(setup.path_mod_list, 'r+')
+	mod_list_data = json.load(mod_list_file)
+	mod_list_data["enabled_mods"] = mod_list
+	mod_list_file.seek(0)
+	json.dump(mod_list_data, mod_list_file)
+	mod_list_file.truncate()
+	mod_list_file.close()
 	print("Wrote updated mod list")
 	
 
-def sortModObj(val):  # use as a key
+def sort_mod_obj(val):  # use as a key
 	return val.name
 
 

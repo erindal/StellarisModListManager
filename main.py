@@ -6,11 +6,13 @@
 import setup
 import gui_cmd
 
+
 def run():
-	doRun = setup.confirmStellaris()
-	isRunning = setup.isStellarisRunning()
-	if doRun and not isRunning:
-		gui_cmd.appLoop()
+	do_run = setup.confirm_stellaris()
+	is_running = setup.is_stellaris_running()
+	if do_run and not is_running:
+		gui_cmd.app_loop()
+
 
 if __name__ == "__main__":
 	run()

@@ -7,13 +7,13 @@ from tkinter import filedialog
 from tkinter import *
 import util
 import setup
-import json
 import sys
 import time
 
 data = util.GameData()
 
-def displayMenu():
+
+def display_menu():
 	print("------------------")
 	print("1. Sort load order")
 	print("2. View mod list")
@@ -25,82 +25,82 @@ def displayMenu():
 	print("8. Instructions")
 	print("9. Close SMLM")
 	print("------------------")
-	
-def appLoop():
-	isSaved = True
-	isApplied = True
-	
+
+
+def app_loop():
+	is_saved = True
+	is_applied = True
+
 	while True:
-		displayMenu()
-		
+		display_menu()
+
 		user_in = input("> ")
-		
-		if user_in == "1": # Sort
+
+		if user_in == "1":  # Sort
 			print("Sorting mod list")
-			data.sortModOrder()
-			isSaved = False
-			isApplied = False
+			data.sort_mod_order()
+			is_saved = False
+			is_applied = False
 			print("Done")
-			
-			
-		elif user_in == "2": # Print mods
-			data.displayOrderedActiveMods()
-			
-		elif user_in == "3": # Add/remove mods
+
+		elif user_in == "2":  # Print mods
+			data.display_ordered_active_mods()
+
+		elif user_in == "3":  # Add/remove mods
 			print("NYI")
-			
-		elif user_in == "4": # Save
-			if not isSaved:
+
+		elif user_in == "4":  # Save
+			if not is_saved:
 				print("Enter a file name: ")
-				fileTitle = input("> ")
-				
-				data.exportData(fileTitle)
-				
-				isSaved = True
-				
+				file_title = input("> ")
+
+				data.exportData(file_title)
+
+				is_saved = True
+
 			else:
 				print("Already saved!")
-			
-		elif user_in == "5": # Load
+
+		elif user_in == "5":  # Load
 			root = Tk()
-			root.filename =  filedialog.askopenfilename(initialdir = setup.pathSaveFolder,title = "Select mod list file",filetypes = (("SMLM Files","*.json_smlm"),("all files","*.*")))			
+			root.filename = filedialog.askopenfilename(initialdir=setup.path_save_folder, title="Select mod list file",
+													   filetypes=(("SMLM Files", "*.json_smlm"), ("all files", "*.*")))
 			temp = root.filename
 			root.destroy()
-			
-			data.importData(temp)
-			
-			isApplied = False
-			isSaved = False
-			
+
+			data.import_data(temp)
+
+			is_applied = False
+			is_saved = False
+
 			print("Mod list loaded")
-			
-		elif user_in == "6": # Share
+
+		elif user_in == "6":  # Share
 			print("NYI")
-			
-		elif user_in == "7": # Apply
-			data.writeAllData()
-			
-			isApplied = True
-			
+
+		elif user_in == "7":  # Apply
+			data.write_all_data()
+
+			is_applied = True
+
 		elif user_in == "8":
 			print("----")
 			print("Enter a number to access an application function")
 			print("Stellaris mod list manager stores all changes internally until you apply your changes to Stellaris")
 			print("----")
 			time.sleep(2)
-	
+
 		elif user_in == "9":
-			if not isSaved:
+			if not is_saved:
 				print("Your changes have not been saved to a file!")
-			
-			if not isApplied:
+
+			if not is_applied:
 				print("Your changes have not been applied to Stellaris!")
-				
-			if isSaved and isApplied:
+
+			if is_saved and is_applied:
 				sys.exit()
 			else:
 				print("If you don't care, simply close this window")
 				time.sleep(2)
-				
-			
-#appLoop()
+
+# appLoop()
