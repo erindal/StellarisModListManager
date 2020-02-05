@@ -83,8 +83,18 @@ def app_loop():
 			temp = in_code.split("/")
 			code = temp[-1]
 			print(code)
-			data.read_paste(code)
-
+			
+			msg_box = messagebox.askquestion("Continue?", "This will overwrite any unsaved data. YOU MUST APPLY AFTER IMPORTING!", icon = 'warning')
+			# todo check is_saved
+			
+			if msg_box == 'yes':
+				root.destroy()
+				data.read_paste(code)
+			else:
+				root.destroy()
+				print("Import cancelled!")
+				time.sleep(2)
+				
 		elif user_in == "7":  # Share
 			print("Your share code is: ")
 			print(data.create_paste())
