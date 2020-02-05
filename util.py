@@ -5,7 +5,9 @@
 import setup
 import json
 import requests
+import os
 import urllib.request as url_req
+from tkinter import *
 
 class Mod:  # holds mod info
 	def __init__(self, uid, name, path):
@@ -81,15 +83,32 @@ class GameData:
 		
 		save_file.close()
 		
-	def export_data(self, file_title):
+	def export_data(self, file_title): # Warning! This will need adjustment for a different ui system!
+	
+		save_file_path = setup.path_save_folder + file_title + ".json_smlm"
 		
-		save_file = open(setup.path_save_folder + file_title + ".json_smlm", "w")
+		if os.path.exists(save_file_path):
+			root = Tk()
+			
+			msg_box = messagebox.askquestion("Overwrite?", "This file already exists. Do you wish to overwrite it?", icon = 'warning')
+			
+			if msg_box == 'yes':
+				root.destroy()
+				
+			else:
+				return False
+			
+			
+		
+		save_file = open(save_file_path, "w")
 		
 		data_dict = {'load_order': self.load_order, 'loaded_mods': self.active_mods}
 		
 		json.dump(data_dict, save_file)
 		
 		save_file.close()
+		
+		return True
 
 	def create_paste(self):
 		data_dict = {'load_order': self.load_order, 'loaded_mods': self.active_mods}
