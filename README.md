@@ -1,7 +1,7 @@
 # StellarisModListManager
 
-News 1/1/2020:
-New year means new features and more development. Working on 3.1 this week with full sharing functionality.
+News 2/12/2020:
+3.1 will have sharing functionality and will probably fix most active issues/finish WIP project cards, hopefully coming before the end of the month
 
 A simple mod list manager for Stellaris 2.4+. Currently only supports Windows OS.
 
