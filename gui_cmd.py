@@ -8,6 +8,7 @@ import util
 import setup
 import sys
 import time
+import os
 
 data = util.GameData()
 
@@ -22,7 +23,8 @@ def display_menu():
 	print("6. Import a mod list from Pastebin")
 	print("7. Share your mod list")
 	print("8. Instructions")
-	print("9. Close SMLM")
+	print("9. Open SMLM save folder")
+	print("0. Close SMLM")
 	print("------------------")
 
 
@@ -62,6 +64,14 @@ def app_loop():
 				print("Already saved!")
 
 		elif user_in == "5":  # Load
+			if not is_saved:
+				msg_box = util.message_box("Overwrite?", "Your current configuration has not been saved, do you wish to continue?", 4)
+
+				if msg_box == 6:
+					pass
+				else:
+					print("Click cancel on the next screen")
+
 			root = Tk()
 			root.filename = filedialog.askopenfilename(
 				initialdir=setup.path_save_folder, title="Select mod list file",
@@ -69,12 +79,16 @@ def app_loop():
 			temp = root.filename
 			root.destroy()
 
-			data.import_data(temp)
+			if temp == '':
+				print("No file selected")
 
-			is_applied = False
-			is_saved = False
+			else:
+				data.import_data(temp)
 
-			print("Mod list loaded")
+				is_applied = False
+				is_saved = True
+
+				print("Mod list loaded")
 
 		elif user_in == "6":  # Import
 			print("Enter a pastebin url or a share code:")
@@ -87,10 +101,13 @@ def app_loop():
 
 			if msg_box == 6:
 				data.read_paste(code)
+
+				is_saved = False
+				is_applied = False
 			else:
 				print("Import cancelled!")
 				time.sleep(2)
-				
+
 		elif user_in == "7":  # Share
 			print("Your share code is: ")
 			print(data.create_paste())
@@ -104,7 +121,10 @@ def app_loop():
 			print("----")
 			time.sleep(2)
 
-		elif user_in == "9":
+		elif user_in == "9":  # Open folder
+			os.startfile(setup.path_save_folder)
+
+		elif user_in == "0":  # Exit
 			if not is_saved:
 				print("Your changes have not been saved to a file!")
 

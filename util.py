@@ -2,6 +2,7 @@
 # Contact: erindalc@gmail.com
 # This code is under the MIT License, however if you use it, some notification would be appreciated!
 
+import urllib.error
 import ctypes
 import setup
 import json
@@ -129,14 +130,19 @@ class GameData:
 		return paste_code
 
 	def read_paste(self, share_code):  # TODO HANDLE BAD CODES
-		response = url_req.urlopen('https://pastebin.com/raw/'+share_code)
-		data = response.read().decode('UTF-8')
-		print(data)
+		try:
+			response = url_req.urlopen('https://pastebin.com/raw/'+share_code)
+			data = response.read().decode('UTF-8')
+			print(data)
 
-		data_dict = json.loads(data)
+			data_dict = json.loads(data)
 
-		self.load_order = data_dict['load_order']
-		self.active_mods = data_dict['loaded_mods']
+			self.load_order = data_dict['load_order']
+			self.active_mods = data_dict['loaded_mods']
+		except urllib.error.HTTPError:
+			print("Bad url!")
+			print("Import failed!")
+			print("Ensure you have the correct url or code")
 
 
 def get_mod_data():  # Returns list of Mod objects of all installed mods
@@ -190,7 +196,13 @@ def get_selected_mods():  # Returns current mod list in list form, using mod's p
 	mod_list_file.close()
 	
 	mod_list = mod_list_data["enabled_mods"]  # WHY IS THIS INCONSISTENT ??? Come on paradox
-	
+
+	# if not mod_list:
+	# 	print("No mods selected!")
+	# 	print("Please close this, enable at least one mod in the Stellaris launcher, and restart SMLM")
+	# 	input()
+	# 	sys.exit()
+
 	return mod_list
 
 
