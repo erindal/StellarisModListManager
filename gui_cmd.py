@@ -2,7 +2,6 @@
 # Contact: erindalc@gmail.com
 # This code is under the MIT License, however if you use it, some notification would be appreciated!
 
-
 from tkinter import filedialog
 from tkinter import *
 import util
@@ -55,9 +54,9 @@ def app_loop():
 				print("Enter a file name: ")
 				file_title = input("> ")
 
-				data.export_data(file_title)
+				did_save = data.export_data(file_title)
 
-				is_saved = True
+				is_saved = did_save
 
 			else:
 				print("Already saved!")
@@ -83,15 +82,12 @@ def app_loop():
 			temp = in_code.split("/")
 			code = temp[-1]
 			print(code)
-			
-			msg_box = messagebox.askquestion("Continue?", "This will overwrite any unsaved data. YOU MUST APPLY AFTER IMPORTING!", icon = 'warning')
-			# todo check is_saved
-			
-			if msg_box == 'yes':
-				root.destroy()
+
+			msg_box = util.message_box("Continue?", "This will overwrite any unsaved data. YOU MUST APPLY AFTER IMPORTING!", 4)
+
+			if msg_box == 6:
 				data.read_paste(code)
 			else:
-				root.destroy()
 				print("Import cancelled!")
 				time.sleep(2)
 				
@@ -124,4 +120,4 @@ def app_loop():
 		else:
 			print("Invalid command!")
 
-# appLoop()
+

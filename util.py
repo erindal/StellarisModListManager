@@ -2,12 +2,20 @@
 # Contact: erindalc@gmail.com
 # This code is under the MIT License, however if you use it, some notification would be appreciated!
 
+import ctypes
 import setup
 import json
 import requests
 import os
 import urllib.request as url_req
 from tkinter import *
+
+
+def message_box(title, text, style):
+	return ctypes.windll.user32.MessageBoxW(0, text, title, style)
+# See: https://stackoverflow.com/questions/34953438/how-can-i-get-the-value-of-the-pressed-button-inside-of-a-ctypes-messageboxa?noredirect=1&lq=1
+# For info
+
 
 class Mod:  # holds mod info
 	def __init__(self, uid, name, path):
@@ -83,22 +91,17 @@ class GameData:
 		
 		save_file.close()
 		
-	def export_data(self, file_title): # Warning! This will need adjustment for a different ui system!
+	def export_data(self, file_title):  # Warning! This will need adjustment for a different ui system!
 	
 		save_file_path = setup.path_save_folder + file_title + ".json_smlm"
 		
 		if os.path.exists(save_file_path):
-			root = Tk()
+			msg_box = message_box("Overwrite?", "This file already exists. Do you wish to overwrite it?", 4)
 			
-			msg_box = messagebox.askquestion("Overwrite?", "This file already exists. Do you wish to overwrite it?", icon = 'warning')
-			
-			if msg_box == 'yes':
-				root.destroy()
-				
+			if msg_box == 6:
+				pass
 			else:
 				return False
-			
-			
 		
 		save_file = open(save_file_path, "w")
 		
@@ -149,7 +152,7 @@ def get_mod_data():  # Returns list of Mod objects of all installed mods
 		name = mod_data[mod]["displayName"]
 		try:
 			path = mod_data[mod]["gameRegistryId"]
-		except KeyError: # Handle missing path
+		except KeyError:  # Handle missing path
 			print("")
 			print("Missing game reg id!")
 			print("This mod was not installed correctly!")
@@ -198,7 +201,7 @@ def write_mod_order(mod_order):
 	load_order_data["modsOrder"] = mod_order
 	load_order_file.seek(0)
 	json.dump(load_order_data, load_order_file)
-	load_order_file.truncate() # Technically this shouldn't be necessary but just in case
+	load_order_file.truncate()  # Technically this shouldn't be necessary but just in case
 	load_order_file.close()
 	print("Wrote updated load order")
 
