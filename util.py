@@ -9,7 +9,6 @@ import json
 import requests
 import os
 import urllib.request as url_req
-from tkinter import *
 
 
 def message_box(title, text, style):
