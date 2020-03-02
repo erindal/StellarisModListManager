@@ -114,7 +114,7 @@ class GameData:
 		return True
 
 	def create_paste(self):
-		data_dict = {'load_order': self.load_order, 'loaded_mods': self.active_mods}
+		data_dict = {'loaded_mods': self.active_mods}
 
 		paste_data = json.dumps(data_dict)
 
@@ -128,7 +128,7 @@ class GameData:
 
 		return paste_code
 
-	def read_paste(self, share_code):  # TODO HANDLE BAD CODES
+	def read_paste(self, share_code):
 		try:
 			response = url_req.urlopen('https://pastebin.com/raw/'+share_code)
 			data = response.read().decode('UTF-8')
@@ -136,8 +136,28 @@ class GameData:
 
 			data_dict = json.loads(data)
 
-			self.load_order = data_dict['load_order']
-			self.active_mods = data_dict['loaded_mods']
+			do_import = True
+
+			# Ensure import mods match existing mod
+			for im_mod_path in data_dict['loaded_mods']:
+				temp = False
+				for mod in self.all_mods_list:
+					if im_mod_path == mod.path:
+						temp = True
+
+				if not temp:
+					print("Missing mod!")
+					print(im_mod_path)  # TODO add function to turn into url
+					do_import = False
+
+			if do_import:
+				self.active_mods = data_dict['loaded_mods']
+			else:  # NEEDS CHANGES FOR NEW UI
+				print("You're missing one or more mods!")
+				print("See above for mod url(s)!")
+				print("Press enter to continue")
+				input()
+
 		except urllib.error.HTTPError:
 			print("Bad url!")
 			print("Import failed!")
