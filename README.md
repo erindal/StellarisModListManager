@@ -1,7 +1,7 @@
 # StellarisModListManager
 
-News 2/23/2020:
-3.1 has a beta live with sharing! Make sure you read the build notes carefully.
+News 8/14/20:
+The Stellaris Launcher now contains the majority of features I implemented. This may return at some point strictly as a sharing tool.
 
 A simple mod list manager for Stellaris 2.4+. Currently only supports Windows OS. Built on Python 3
 
